@@ -1,31 +1,48 @@
-const CACHE_NAME = 'zaman-planlayici-v1';
+const CACHE_NAME = 'v3'; // Versiyonu v3'e yükselt
 const urlsToCache = [
   '/',
-  '/index.html'
+  '/index.html',
+  '/manifest.json',
+  'https://cdn.tailwindcss.com',
+  'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap'
 ];
 
-// Yükleme sırasında temel dosyaları önbelleğe al
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Önbellek açıldı');
+        console.log('Cache açıldı (v3)');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Gelen isteklere yanıt ver
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Önbellekte varsa, önbellekten döndür
         if (response) {
           return response;
         }
-        // Önbellekte yoksa, ağdan getirmeye çalış
         return fetch(event.request);
-      })
+      }
+    )
   );
 });
+
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log('Eski cache siliniyor:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
