@@ -8,73 +8,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- PWA için Manifest Dosyası -->
     <link rel="manifest" href="manifest.json">
-    <!-- PWA için Tema Rengi -->
     <meta name="theme-color" content="#1f2937"/>
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #111827; /* Dark Blue-Gray background */
-            color: #f3f4f6; /* Light gray text */
-            overflow: hidden; /* Prevent scrolling */
-        }
-        .clock-title {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 500;
-        }
-        svg text {
-            font-family: 'Roboto', sans-serif;
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10+ and Edge */
-            user-select: none; /* Standard syntax */
-        }
-        /* Custom scrollbar for task list and time picker */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #1f2937;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #4b5563;
-            border-radius: 10px;
-            border: 2px solid #1f2937;
-        }
-        .time-picker-column {
-            scroll-snap-type: y mandatory;
-        }
-        .time-picker-column span {
-            scroll-snap-align: center;
-        }
-        /* Zaman seçici DIV'ini input gibi göstermek için stil */
-        .time-input-div {
-            width: 100%;
-            background-color: #37475a; /* bg-gray-700 */
-            border: 1px solid #4b5563; /* border-gray-600 */
-            border-radius: 0.375rem; /* rounded-md */
-            padding: 0.5rem 0.75rem; /* py-2 px-3 */
-            color: white;
-            cursor: pointer;
-            line-height: 1.5rem;
-        }
-        .time-input-div:focus {
-            outline: 2px solid transparent;
-            outline-offset: 2px;
-            --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-            --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-            box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
-            --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity));
-            --tw-ring-opacity: 1;
-        }
+        body { font-family: 'Roboto', sans-serif; background-color: #111827; color: #f3f4f6; }
+        .clock-title { font-family: 'Roboto', sans-serif; font-weight: 500; }
+        svg text { font-family: 'Roboto', sans-serif; user-select: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1f2937; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 10px; border: 2px solid #1f2937; }
+        .time-picker-column { scroll-snap-type: y mandatory; }
+        .time-picker-column span { scroll-snap-align: center; }
+        .time-input-div { width: 100%; background-color: #37475a; border: 1px solid #4b5563; border-radius: 0.375rem; padding: 0.5rem 0.75rem; color: white; cursor: pointer; line-height: 1.5rem; }
+        .time-input-div:focus { outline: 2px solid transparent; outline-offset: 2px; box-shadow: 0 0 0 2px #3b82f6; }
     </style>
 </head>
-<body class="w-full h-screen p-4 md:p-8">
-
-    <main class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full h-full">
-        <!-- Sol Sütun: Saat -->
-        <div class="flex flex-col items-center justify-center w-full h-full p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700">
-            <h1 class="clock-title text-2xl md:text-3xl text-center mb-4 text-gray-300">24-Saatlik Zaman Döngüsü</h1>
+<body class="w-full min-h-screen md:h-screen md:overflow-hidden p-4 md:p-8">
+    <main class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full md:h-full">
+        <!-- Sol Sütun: Saat (Dikeyde üste gelir) -->
+        <div class="flex flex-col items-center justify-center w-full p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 aspect-square md:aspect-auto">
+            <h1 class="clock-title text-2xl md:text-3xl text-center mb-4 text-gray-300">24-Saatlik Zaman Döngüsü (v2)</h1>
             <svg id="sectograph-clock" class="w-full h-full max-w-xl" viewBox="0 0 500 500">
                 <defs id="pattern-defs"></defs>
                 <circle cx="250" cy="250" r="240" fill="none" stroke="#374151" stroke-width="4"/>
@@ -92,321 +45,54 @@
                 <circle cx="250" cy="250" r="4" fill="#1f2937"/>
             </svg>
         </div>
-
-        <!-- Sağ Sütun: Görev Yöneticisi -->
-        <div class="flex flex-col w-full h-full p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700">
+        <!-- Sağ Sütun: Görev Yöneticisi (Dikeyde alta gelir) -->
+        <div class="flex flex-col w-full md:h-full p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700">
             <h2 class="clock-title text-2xl md:text-3xl text-center mb-6 text-gray-300">Etkinlik Yöneticisi</h2>
-            
             <form id="add-event-form" class="grid grid-cols-2 gap-4 mb-6">
-                <div class="col-span-2">
-                    <label for="event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label>
-                    <input type="text" id="event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-                <div>
-                    <label for="start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç</label>
-                    <div id="start-time" class="time-input-div" tabindex="0">12:00</div>
-                </div>
-                <div>
-                    <label for="end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş</label>
-                    <div id="end-time" class="time-input-div" tabindex="0">13:00</div>
-                </div>
-                <div class="col-span-2 flex items-center gap-4">
-                     <label for="event-color" class="block text-sm font-medium text-gray-400">Renk</label>
-                     <input type="color" id="event-color" value="#3b82f6" class="bg-gray-700 rounded-md">
-                </div>
-                <div class="col-span-2">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Etkinlik Ekle</button>
-                </div>
+                <div class="col-span-2"><label for="event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label><input type="text" id="event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
+                <div><label for="start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç</label><div id="start-time" class="time-input-div" tabindex="0">12:00</div></div>
+                <div><label for="end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş</label><div id="end-time" class="time-input-div" tabindex="0">13:00</div></div>
+                <div class="col-span-2 flex items-center gap-4"><label for="event-color" class="block text-sm font-medium text-gray-400">Renk</label><input type="color" id="event-color" value="#3b82f6" class="bg-gray-700 rounded-md"></div>
+                <div class="col-span-2"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Etkinlik Ekle</button></div>
             </form>
-
-            <div class="flex-grow overflow-y-auto custom-scrollbar task-list pr-2">
-                <h3 class="text-xl font-medium text-gray-300 mb-4">Etkinlik Listesi</h3>
-                <ul id="event-list" class="space-y-3"></ul>
-            </div>
+            <!-- Görev Listesi -->
+            <div class="flex-grow overflow-y-auto custom-scrollbar task-list pr-2"><h3 class="text-xl font-medium text-gray-300 mb-4">Etkinlik Listesi</h3><ul id="event-list" class="space-y-3"></ul></div>
         </div>
     </main>
-
-    <!-- Düzenleme Modalı -->
+    <!-- Modals (Düzenleme ve Zaman Seçici) -->
     <div id="edit-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden">
         <div class="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md border border-gray-700">
             <h2 class="text-2xl font-bold text-white mb-6">Etkinliği Düzenle</h2>
             <form id="edit-event-form">
                 <input type="hidden" id="edit-event-id">
-                <div class="mb-4">
-                    <label for="edit-event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label>
-                    <input type="text" id="edit-event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
+                <div class="mb-4"><label for="edit-event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label><input type="text" id="edit-event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label for="edit-start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç</label>
-                         <div id="edit-start-time" class="time-input-div" tabindex="0"></div>
-                    </div>
-                    <div>
-                        <label for="edit-end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş</label>
-                         <div id="edit-end-time" class="time-input-div" tabindex="0"></div>
-                    </div>
+                    <div><label for="edit-start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç</label><div id="edit-start-time" class="time-input-div" tabindex="0"></div></div>
+                    <div><label for="edit-end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş</label><div id="edit-end-time" class="time-input-div" tabindex="0"></div></div>
                 </div>
-                <div class="mb-6">
-                     <label for="edit-event-color" class="block text-sm font-medium text-gray-400 mb-2">Renk</label>
-                     <input type="color" id="edit-event-color" class="bg-gray-700 rounded-md">
-                </div>
-                <div class="flex justify-end gap-4">
-                    <button type="button" id="cancel-edit-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">İptal</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Kaydet</button>
-                </div>
+                <div class="mb-6"><label for="edit-event-color" class="block text-sm font-medium text-gray-400 mb-2">Renk</label><input type="color" id="edit-event-color" class="bg-gray-700 rounded-md"></div>
+                <div class="flex justify-end gap-4"><button type="button" id="cancel-edit-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">İptal</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Kaydet</button></div>
             </form>
         </div>
     </div>
-    
-    <!-- Özel Zaman Seçici Modalı -->
     <div id="time-picker-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden">
         <div class="bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-xs border border-gray-700">
             <div class="flex justify-center items-center h-48 bg-gray-900/50 rounded-lg relative overflow-hidden">
                 <div id="time-picker-hours" class="w-1/2 h-full overflow-y-scroll custom-scrollbar time-picker-column text-center text-4xl py-12"></div>
                 <div id="time-picker-minutes" class="w-1/2 h-full overflow-y-scroll custom-scrollbar time-picker-column text-center text-4xl py-12"></div>
-                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div class="w-full h-12 bg-blue-500/10 border-y-2 border-blue-500"></div>
-                    <span class="absolute text-4xl text-white">:</span>
-                </div>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none"><div class="w-full h-12 bg-blue-500/10 border-y-2 border-blue-500"></div><span class="absolute text-4xl text-white">:</span></div>
             </div>
-            <div class="flex justify-end gap-4 mt-6">
-                <button type="button" id="time-picker-cancel" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">İptal</button>
-                <button type="button" id="time-picker-ok" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Tamam</button>
-            </div>
+            <div class="flex justify-end gap-4 mt-6"><button type="button" id="time-picker-cancel" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">İptal</button><button type="button" id="time-picker-ok" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Tamam</button></div>
         </div>
     </div>
-
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // ... (drawClockFace, timeToMinutes, createArc vb. diğer fonksiyonlar aynı kalacak)
-            const centerX = 250, centerY = 250, eventArcRadius = 205;
-            let events = [{id: 1, name: 'Proje Toplantısı', start: '09:00', end: '10:30', color: '#3b82f6'}];
-
-            const addForm = document.getElementById('add-event-form');
-            const eventList = document.getElementById('event-list');
-            const eventArcsContainer = document.getElementById('event-arcs');
-            const hourHand = document.getElementById('hour-hand');
-            const minuteHand = document.getElementById('minute-hand');
-            const editModalBackdrop = document.getElementById('edit-modal-backdrop');
-            const editForm = document.getElementById('edit-event-form');
-            const cancelEditBtn = document.getElementById('cancel-edit-btn');
-            
-            const timePickerModal = document.getElementById('time-picker-modal');
-            const timePickerHours = document.getElementById('time-picker-hours');
-            const timePickerMinutes = document.getElementById('time-picker-minutes');
-            const timePickerOkBtn = document.getElementById('time-picker-ok');
-            const timePickerCancelBtn = document.getElementById('time-picker-cancel');
-            let activeTimeInput = null;
-
-            function drawClockFace() {
-                const svg_ticks = document.getElementById('ticks');
-                const svg_numbers = document.getElementById('numbers');
-                svg_ticks.innerHTML = ''; svg_numbers.innerHTML = '';
-                const radius = 195, tickOuterRadius = 230;
-                for (let i = 0; i < 24 * 6; i++) {
-                    const totalMinutes = i * 10, h = Math.floor(totalMinutes / 60), m = totalMinutes % 60;
-                    const angle = ((totalMinutes / 1440) * 360) - 90, angleRad = angle * (Math.PI / 180);
-                    const isHourTick = m === 0, isMajorHourTick = isHourTick && (h % 6 === 0);
-                    let tickStartRadius, tickWidth, tickColor;
-                    if (isHourTick) { tickStartRadius = isMajorHourTick ? 215 : 220; tickWidth = isMajorHourTick ? '3' : '2'; tickColor = isMajorHourTick ? '#60a5fa' : '#4b5563'; }
-                    else { tickStartRadius = 225; tickWidth = '1'; tickColor = '#4b5563'; }
-                    const x1 = centerX + tickStartRadius * Math.cos(angleRad), y1 = centerY + tickStartRadius * Math.sin(angleRad);
-                    const x2 = centerX + tickOuterRadius * Math.cos(angleRad), y2 = centerY + tickOuterRadius * Math.sin(angleRad);
-                    const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    tick.setAttribute('x1', x1); tick.setAttribute('y1', y1); tick.setAttribute('x2', x2); tick.setAttribute('y2', y2);
-                    tick.setAttribute('stroke', tickColor); tick.setAttribute('stroke-width', tickWidth);
-                    svg_ticks.appendChild(tick);
-                }
-                for (let h = 0; h < 24; h++) {
-                    const angle = ((h / 24) * 360) - 90, angleRad = angle * (Math.PI / 180), isMajorTick = h % 6 === 0;
-                    const numX = centerX + radius * Math.cos(angleRad), numY = centerY + radius * Math.sin(angleRad);
-                    const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                    numberText.setAttribute('x', numX); numberText.setAttribute('y', numY);
-                    numberText.setAttribute('fill', isMajorTick ? '#93c5fd' : '#9ca3af');
-                    numberText.setAttribute('font-weight', isMajorTick ? '500' : '400');
-                    numberText.setAttribute('text-anchor', 'middle'); numberText.setAttribute('dominant-baseline', 'central');
-                    if (h === 0) { numberText.setAttribute('font-size', '20'); numberText.textContent = '24:00'; }
-                    else { numberText.setAttribute('font-size', isMajorTick ? '22' : '16'); numberText.textContent = h.toString().padStart(2, '0'); }
-                    svg_numbers.appendChild(numberText);
-                }
-            }
-            
-            function setupTimePicker() {
-                for(let i = 0; i < 24; i++) {
-                    const hourEl = document.createElement('span');
-                    hourEl.textContent = i.toString().padStart(2, '0');
-                    hourEl.className = 'block h-12 flex items-center justify-center';
-                    timePickerHours.appendChild(hourEl);
-                }
-                 for(let i = 0; i < 60; i++) {
-                    const minuteEl = document.createElement('span');
-                    minuteEl.textContent = i.toString().padStart(2, '0');
-                    minuteEl.className = 'block h-12 flex items-center justify-center';
-                    timePickerMinutes.appendChild(minuteEl);
-                }
-            }
-            
-            function openTimePicker(targetInput) {
-                activeTimeInput = targetInput;
-                const [h, m] = activeTimeInput.textContent.split(':').map(Number);
-                const hourElHeight = timePickerHours.querySelector('span').offsetHeight;
-                timePickerHours.scrollTop = h * hourElHeight;
-                const minuteElHeight = timePickerMinutes.querySelector('span').offsetHeight;
-                timePickerMinutes.scrollTop = m * minuteElHeight;
-                timePickerModal.classList.remove('hidden');
-            }
-            
-            function closeTimePicker() { timePickerModal.classList.add('hidden'); }
-
-            function handleTimePickerOk() {
-                if (activeTimeInput) {
-                    const hourElHeight = timePickerHours.querySelector('span').offsetHeight;
-                    const selectedHour = Math.round(timePickerHours.scrollTop / hourElHeight);
-                    const minuteElHeight = timePickerMinutes.querySelector('span').offsetHeight;
-                    const selectedMinute = Math.round(timePickerMinutes.scrollTop / minuteElHeight);
-                    activeTimeInput.textContent = `${selectedHour.toString().padStart(2, '0')}:${selectedMinute.toString().padStart(2, '0')}`;
-                }
-                closeTimePicker();
-            }
-
-            function timeToMinutes(timeStr) { const [hours, minutes] = timeStr.split(':').map(Number); return hours * 60 + minutes; }
-
-            function renderEvents() {
-                eventList.innerHTML = ''; eventArcsContainer.innerHTML = '';
-                const patternDefs = document.getElementById('pattern-defs');
-                if(patternDefs) patternDefs.innerHTML = '';
-                if (events.length === 0) { eventList.innerHTML = `<p class="text-gray-500 text-center">Henüz etkinlik eklenmedi.</p>`; return; }
-                const sortedEvents = [...events].sort((a, b) => b.id - a.id);
-                sortedEvents.forEach(event => {
-                    const originalEvent = events.find(e => e.id === event.id);
-                    const li = document.createElement('li');
-                    li.className = 'bg-gray-700 p-3 rounded-lg flex items-center justify-between';
-                    li.innerHTML = `
-                        <div class="flex items-center"><span class="w-4 h-4 rounded-full mr-3 flex-shrink-0" style="background-color: ${originalEvent.color};"></span>
-                            <div><p class="font-semibold text-white">${originalEvent.name}</p><p class="text-sm text-gray-400">${originalEvent.start} - ${originalEvent.end}</p></div>
-                        </div>
-                        <div class="flex items-center">
-                             <button data-id="${originalEvent.id}" class="edit-btn text-gray-400 hover:text-white p-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="pointer-events: none;"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg></button>
-                             <button data-id="${originalEvent.id}" class="delete-btn text-gray-500 hover:text-red-400 text-2xl leading-none px-2">&times;</button>
-                        </div>`;
-                    eventList.appendChild(li);
-                    const startAngle = timeToAngle(event.start), endAngle = timeToAngle(event.end);
-                    if (timeToMinutes(event.end) < timeToMinutes(event.start)) {
-                        const arc1 = createArc(centerX, centerY, eventArcRadius, startAngle, 270);
-                        const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        path1.setAttribute('d', arc1); path1.setAttribute('fill', event.color); path1.setAttribute('fill-opacity', '0.6');
-                        eventArcsContainer.appendChild(path1);
-                        const arc2 = createArc(centerX, centerY, eventArcRadius, -90, endAngle);
-                        const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        path2.setAttribute('d', arc2); path2.setAttribute('fill', event.color); path2.setAttribute('fill-opacity', '0.6');
-                        eventArcsContainer.appendChild(path2);
-                    } else {
-                        const arc = createArc(centerX, centerY, eventArcRadius, startAngle, endAngle);
-                        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        path.setAttribute('d', arc); path.setAttribute('fill', event.color); path.setAttribute('fill-opacity', '0.6');
-                        eventArcsContainer.appendChild(path);
-                    }
-                });
-                const drawnPatterns = {};
-                for (let i = 0; i < sortedEvents.length; i++) {
-                    for (let j = i + 1; j < sortedEvents.length; j++) {
-                        const event1 = sortedEvents[i], event2 = sortedEvents[j];
-                        const findOverlapSegments = (ev1, ev2) => {
-                            let s1 = timeToMinutes(ev1.start), e1 = timeToMinutes(ev1.end), s2 = timeToMinutes(ev2.start), e2 = timeToMinutes(ev2.end);
-                            const segments1 = (e1 < s1) ? [{s: s1, e: 1440}, {s: 0, e: e1}] : [{s: s1, e: e1}];
-                            const segments2 = (e2 < s2) ? [{s: s2, e: 1440}, {s: 0, e: e2}] : [{s: s2, e: e2}];
-                            const overlaps = [];
-                            for (const seg1 of segments1) for (const seg2 of segments2) { const oStart = Math.max(seg1.s, seg2.s), oEnd = Math.min(seg1.e, seg2.e); if (oStart < oEnd) overlaps.push({ start: oStart, end: oEnd }); }
-                            return overlaps;
-                        };
-                        const overlapSegments = findOverlapSegments(event1, event2);
-                        if (overlapSegments.length > 0) {
-                            const overlapColor = event1.color, patternId = `pattern-${overlapColor.replace('#', '')}`;
-                            if (!drawnPatterns[patternId]) {
-                                const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
-                                pattern.setAttribute('id', patternId); pattern.setAttribute('patternUnits', 'userSpaceOnUse'); pattern.setAttribute('width', '8'); pattern.setAttribute('height', '8'); pattern.setAttribute('patternTransform', 'rotate(45)');
-                                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                                line.setAttribute('x1', '0'); line.setAttribute('y1', '0'); line.setAttribute('x2', '0'); line.setAttribute('y2', '8');
-                                line.setAttribute('stroke', overlapColor); line.setAttribute('stroke-width', '4');
-                                pattern.appendChild(line); patternDefs.appendChild(pattern); drawnPatterns[patternId] = true;
-                            }
-                            for (const segment of overlapSegments) {
-                                const startAngle = (segment.start / 1440) * 360 - 90, endAngle = (segment.end / 1440) * 360 - 90;
-                                const arc = createArc(centerX, centerY, eventArcRadius, startAngle, endAngle);
-                                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                                path.setAttribute('d', arc); path.setAttribute('fill', `url(#${patternId})`);
-                                eventArcsContainer.appendChild(path);
-                            }
-                        }
-                    }
-                }
-            }
-
-            function openEditModal(eventId) {
-                const event = events.find(e => e.id === eventId); if (!event) return;
-                document.getElementById('edit-event-id').value = event.id;
-                document.getElementById('edit-event-name').value = event.name;
-                document.getElementById('edit-start-time').textContent = event.start;
-                document.getElementById('edit-end-time').textContent = event.end;
-                document.getElementById('edit-event-color').value = event.color;
-                editModalBackdrop.classList.remove('hidden');
-            }
-
-            function closeEditModal() { editModalBackdrop.classList.add('hidden'); }
-            
-            addForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const newEvent = { id: Date.now(), name: document.getElementById('event-name').value, start: document.getElementById('start-time').textContent, end: document.getElementById('end-time').textContent, color: document.getElementById('event-color').value };
-                events.push(newEvent); renderEvents(); addForm.reset(); document.getElementById('event-color').value = '#3b82f6';
-                document.getElementById('start-time').textContent = '12:00'; document.getElementById('end-time').textContent = '13:00';
-            });
-            
-            editForm.addEventListener('submit', (e) => {
-                 e.preventDefault();
-                 const eventId = parseInt(document.getElementById('edit-event-id').value);
-                 const eventIndex = events.findIndex(event => event.id === eventId);
-                 if (eventIndex > -1) {
-                     events[eventIndex] = { id: eventId, name: document.getElementById('edit-event-name').value, start: document.getElementById('edit-start-time').textContent, end: document.getElementById('edit-end-time').textContent, color: document.getElementById('edit-event-color').value };
-                     renderEvents(); closeEditModal();
-                 }
-            });
-
-            eventList.addEventListener('click', (e) => {
-                const target = e.target.closest('button'); if (!target) return;
-                const eventId = parseInt(target.dataset.id);
-                if (target.classList.contains('delete-btn')) { events = events.filter(event => event.id !== eventId); renderEvents(); } 
-                else if (target.classList.contains('edit-btn')) { openEditModal(eventId); }
-            });
-
-            cancelEditBtn.addEventListener('click', closeEditModal);
-            editModalBackdrop.addEventListener('click', (e) => { if (e.target === editModalBackdrop) { closeEditModal(); } });
-            
-            document.getElementById('start-time').addEventListener('click', (e) => openTimePicker(e.target));
-            document.getElementById('end-time').addEventListener('click', (e) => openTimePicker(e.target));
-            document.getElementById('edit-start-time').addEventListener('click', (e) => openTimePicker(e.target));
-            document.getElementById('edit-end-time').addEventListener('click', (e) => openTimePicker(e.target));
-            timePickerOkBtn.addEventListener('click', handleTimePickerOk);
-            timePickerCancelBtn.addEventListener('click', closeTimePicker);
-
-            function timeToAngle(timeStr) { const [h, m] = timeStr.split(':').map(Number); const totalMinutes = h * 60 + m; return (totalMinutes / 1440) * 360 - 90; }
-            function polarToCartesian(centerX, centerY, radius, angleInDegrees) { const angleInRadians = (angleInDegrees) * Math.PI / 180.0; return { x: centerX + (radius * Math.cos(angleInRadians)), y: centerY + (radius * Math.sin(angleInRadians)) }; }
-            function createArc(x, y, radius, startAngle, endAngle) { if (endAngle < startAngle) { endAngle += 360; } const start = polarToCartesian(x, y, radius, endAngle); const end = polarToCartesian(x, y, radius, startAngle); const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"; const d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y, "L", x, y, "Z"].join(" "); return d; }
-
-            function updateClock() {
-                const now = new Date(); const hours = now.getHours(); const minutes = now.getMinutes(); const seconds = now.getSeconds();
-                const totalMinutesInDay = hours * 60 + minutes; const hourAngle = (totalMinutesInDay / 1440) * 360 - 90;
-                const totalSecondsInHour = minutes * 60 + seconds; const minuteAngle = (totalSecondsInHour / 3600) * 360 - 90;
-                hourHand.setAttribute('transform', `rotate(${hourAngle}, 250, 250)`);
-                minuteHand.setAttribute('transform', `rotate(${minuteAngle}, 250, 250)`);
-            }
-            drawClockFace(); setupTimePicker(); renderEvents(); updateClock(); setInterval(updateClock, 1000);
-        });
+            const centerX=250,centerY=250,eventArcRadius=205;let events=[{id:1,name:'Proje Toplantısı',start:'09:00',end:'10:30',color:'#3b82f6'}];const addForm=document.getElementById('add-event-form'),eventList=document.getElementById('event-list'),eventArcsContainer=document.getElementById('event-arcs'),hourHand=document.getElementById('hour-hand'),minuteHand=document.getElementById('minute-hand'),editModalBackdrop=document.getElementById('edit-modal-backdrop'),editForm=document.getElementById('edit-event-form'),cancelEditBtn=document.getElementById('cancel-edit-btn'),timePickerModal=document.getElementById('time-picker-modal'),timePickerHours=document.getElementById('time-picker-hours'),timePickerMinutes=document.getElementById('time-picker-minutes'),timePickerOkBtn=document.getElementById('time-picker-ok'),timePickerCancelBtn=document.getElementById('time-picker-cancel');let activeTimeInput=null;function drawClockFace(){const e=document.getElementById('ticks'),t=document.getElementById('numbers');e.innerHTML='',t.innerHTML='';const n=195,o=230;for(let r=0;r<144;r++){const a=10*r,i=Math.floor(a/60),l=a%60,s=a/1440*360-90,c=s*Math.PI/180,d=0===l,u=d&&i%6==0;let m,p,g;d?(m=u?215:220,p=u?'3':'2',g=u?'#60a5fa':'#4b5563'):(m=225,p='1',g='#4b5563');const h=250+m*Math.cos(c),f=250+m*Math.sin(c),v=250+o*Math.cos(c),k=250+o*Math.sin(c),b=document.createElementNS("http://www.w3.org/2000/svg","line");b.setAttribute('x1',h),b.setAttribute('y1',f),b.setAttribute('x2',v),b.setAttribute('y2',k),b.setAttribute('stroke',g),b.setAttribute('stroke-width',p),e.appendChild(b)}for(let r=0;r<24;r++){const e=r/24*360-90,o=e*Math.PI/180,a=r%6==0,i=250+n*Math.cos(o),l=250+n*Math.sin(o),s=document.createElementNS("http://www.w3.org/2000/svg","text");s.setAttribute('x',i),s.setAttribute('y',l),s.setAttribute('fill',a?'#93c5fd':'#9ca3af'),s.setAttribute('font-weight',a?'500':'400'),s.setAttribute('text-anchor','middle'),s.setAttribute('dominant-baseline','central'),0===r?(s.setAttribute('font-size','20'),s.textContent='24:00'):(s.setAttribute('font-size',a?'22':'16'),s.textContent=r.toString().padStart(2,'0')),t.appendChild(s)}}function setupTimePicker(){for(let e=0;e<24;e++){const t=document.createElement('span');t.textContent=e.toString().padStart(2,'0'),t.className='block h-12 flex items-center justify-center',timePickerHours.appendChild(t)}for(let e=0;e<60;e++){const t=document.createElement('span');t.textContent=e.toString().padStart(2,'0'),t.className='block h-12 flex items-center justify-center',timePickerMinutes.appendChild(t)}}function openTimePicker(e){activeTimeInput=e;const[t,n]=activeTimeInput.textContent.split(':').map(Number),o=timePickerHours.querySelector('span').offsetHeight;timePickerHours.scrollTop=t*o;const r=timePickerMinutes.querySelector('span').offsetHeight;timePickerMinutes.scrollTop=n*r,timePickerModal.classList.remove('hidden')}function closeTimePicker(){timePickerModal.classList.add('hidden')}function handleTimePickerOk(){if(activeTimeInput){const e=timePickerHours.querySelector('span').offsetHeight,t=Math.round(timePickerHours.scrollTop/e),n=timePickerMinutes.querySelector('span').offsetHeight,o=Math.round(timePickerMinutes.scrollTop/n);activeTimeInput.textContent=`${t.toString().padStart(2,"0")}:${o.toString().padStart(2,"0")}`}closeTimePicker()}function timeToMinutes(e){const[t,n]=e.split(':').map(Number);return 60*t+n}function renderEvents(){eventList.innerHTML='',eventArcsContainer.innerHTML='';const e=document.getElementById('pattern-defs');if(e){e.innerHTML=''}if(events.length===0){eventList.innerHTML=`<p class="text-gray-500 text-center">Henüz etkinlik eklenmedi.</p>`;return}[...events].sort((e,t)=>t.id-e.id).forEach(e=>{const t=events.find(t=>t.id===e.id),n=document.createElement('li');n.className='bg-gray-700 p-3 rounded-lg flex items-center justify-between',n.innerHTML=`<div class="flex items-center"><span class="w-4 h-4 rounded-full mr-3 flex-shrink-0" style="background-color: ${t.color};"></span><div><p class="font-semibold text-white">${t.name}</p><p class="text-sm text-gray-400">${t.start} - ${t.end}</p></div></div><div class="flex items-center"><button data-id="${t.id}" class="edit-btn text-gray-400 hover:text-white p-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="pointer-events: none;"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg></button><button data-id="${t.id}" class="delete-btn text-gray-500 hover:text-red-400 text-2xl leading-none px-2">&times;</button></div>`,eventList.appendChild(n);const o=timeToAngle(e.start),r=timeToAngle(e.end);if(timeToMinutes(e.end)<timeToMinutes(e.start)){const t=createArc(250,250,205,o,270),n=document.createElementNS("http://www.w3.org/2000/svg","path");n.setAttribute('d',t),n.setAttribute('fill',e.color),n.setAttribute('fill-opacity','0.6'),eventArcsContainer.appendChild(n);const a=createArc(250,250,205,-90,r),i=document.createElementNS("http://www.w3.org/2000/svg","path");i.setAttribute('d',a),i.setAttribute('fill',e.color),i.setAttribute('fill-opacity','0.6'),eventArcsContainer.appendChild(i)}else{const t=createArc(250,250,205,o,r),n=document.createElementNS("http://www.w3.org/2000/svg","path");n.setAttribute('d',t),n.setAttribute('fill',e.color),n.setAttribute('fill-opacity','0.6'),eventArcsContainer.appendChild(n)}})}function openEditModal(e){const t=events.find(t=>t.id===e);t&&(document.getElementById('edit-event-id').value=t.id,document.getElementById('edit-event-name').value=t.name,document.getElementById('edit-start-time').textContent=t.start,document.getElementById('edit-end-time').textContent=t.end,document.getElementById('edit-event-color').value=t.color,editModalBackdrop.classList.remove('hidden'))}function closeEditModal(){editModalBackdrop.classList.add('hidden')}addForm.addEventListener('submit',e=>{e.preventDefault();const t={id:Date.now(),name:document.getElementById('event-name').value,start:document.getElementById('start-time').textContent,end:document.getElementById('end-time').textContent,color:document.getElementById('event-color').value};events.push(t),renderEvents(),addForm.reset(),document.getElementById('event-color').value='#3b82f6',document.getElementById('start-time').textContent='12:00',document.getElementById('end-time').textContent='13:00'}),editForm.addEventListener('submit',e=>{e.preventDefault();const t=parseInt(document.getElementById('edit-event-id').value),n=events.findIndex(e=>e.id===t);n>-1&&(events[n]={id:t,name:document.getElementById('edit-event-name').value,start:document.getElementById('edit-start-time').textContent,end:document.getElementById('edit-end-time').textContent,color:document.getElementById('edit-event-color').value},renderEvents(),closeEditModal())}),eventList.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const n=parseInt(t.dataset.id);t.classList.contains('delete-btn')?(events=events.filter(e=>e.id!==n),renderEvents()):t.classList.contains('edit-btn')&&openEditModal(n)}),cancelEditBtn.addEventListener('click',closeEditModal),editModalBackdrop.addEventListener('click',e=>{e.target===editModalBackdrop&&closeEditModal()}),document.getElementById('start-time').addEventListener('click',e=>openTimePicker(e.target)),document.getElementById('end-time').addEventListener('click',e=>openTimePicker(e.target)),document.getElementById('edit-start-time').addEventListener('click',e=>openTimePicker(e.target)),document.getElementById('edit-end-time').addEventListener('click',e=>openTimePicker(e.target)),timePickerOkBtn.addEventListener('click',handleTimePickerOk),timePickerCancelBtn.addEventListener('click',closeTimePicker);function timeToAngle(e){const[t,n]=e.split(':').map(Number);return(60*t+n)/1440*360-90}function polarToCartesian(e,t,n,o){const r=o*Math.PI/180;return{x:e+n*Math.cos(r),y:t+n*Math.sin(r)}}function createArc(e,t,n,o,r){r<o&&(r+=360);const a=polarToCartesian(e,t,n,r),i=polarToCartesian(e,t,n,o),l=r-o<=180?"0":"1";return["M",a.x,a.y,"A",n,n,0,l,0,i.x,i.y,"L",e,t,"Z"].join(" ")}function updateClock(){const e=new Date,t=e.getHours(),n=e.getMinutes(),o=e.getSeconds();hourHand.setAttribute('transform',`rotate(${(60*t+n)/1440*360-90}, 250, 250)`),minuteHand.setAttribute('transform',`rotate(${(60*n+o)/3600*360-90}, 250, 250)`)}drawClockFace(),setupTimePicker(),renderEvents(),updateClock(),setInterval(updateClock,1e3)});
     </script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(r => console.log('OK')).catch(e => console.error('Hata:', e));
+          navigator.serviceWorker.register('./sw.js', { scope: './' }).then(r => console.log('OK')).catch(e => console.error('Hata:', e));
         });
       }
     </script>
