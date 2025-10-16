@@ -29,17 +29,23 @@
             -ms-user-select: none; /* IE 10+ and Edge */
             user-select: none; /* Standard syntax */
         }
-        /* Custom scrollbar for task list */
-        .task-list::-webkit-scrollbar {
+        /* Custom scrollbar for task list and time picker */
+        .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
         }
-        .task-list::-webkit-scrollbar-track {
+        .custom-scrollbar::-webkit-scrollbar-track {
             background: #1f2937;
         }
-        .task-list::-webkit-scrollbar-thumb {
+        .custom-scrollbar::-webkit-scrollbar-thumb {
             background-color: #4b5563;
             border-radius: 10px;
             border: 2px solid #1f2937;
+        }
+        .time-picker-column {
+            scroll-snap-type: y mandatory;
+        }
+        .time-picker-column span {
+            scroll-snap-align: center;
         }
     </style>
 </head>
@@ -88,11 +94,11 @@
                 </div>
                 <div>
                     <label for="start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç</label>
-                    <input type="time" id="start-time" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="text" id="start-time" required readonly class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer" value="12:00">
                 </div>
                 <div>
                     <label for="end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş</label>
-                    <input type="time" id="end-time" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="text" id="end-time" required readonly class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer" value="13:00">
                 </div>
                 <div class="col-span-2 flex items-center gap-4">
                      <label for="event-color" class="block text-sm font-medium text-gray-400">Renk</label>
@@ -104,7 +110,7 @@
             </form>
 
             <!-- Görev Listesi -->
-            <div class="flex-grow overflow-y-auto task-list pr-2">
+            <div class="flex-grow overflow-y-auto custom-scrollbar task-list pr-2">
                 <h3 class="text-xl font-medium text-gray-300 mb-4">Etkinlik Listesi</h3>
                 <ul id="event-list" class="space-y-3">
                     <!-- Etkinlikler buraya dinamik olarak eklenecek -->
@@ -126,11 +132,11 @@
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label for="edit-start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç</label>
-                        <input type="time" id="edit-start-time" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <input type="text" id="edit-start-time" required readonly class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer">
                     </div>
                     <div>
                         <label for="edit-end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş</label>
-                        <input type="time" id="edit-end-time" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <input type="text" id="edit-end-time" required readonly class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer">
                     </div>
                 </div>
                 <div class="mb-6">
@@ -142,6 +148,24 @@
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Kaydet</button>
                 </div>
             </form>
+        </div>
+    </div>
+    
+    <!-- Özel Zaman Seçici Modalı -->
+    <div id="time-picker-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden">
+        <div class="bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-xs border border-gray-700">
+            <div class="flex justify-center items-center h-48 bg-gray-900/50 rounded-lg relative overflow-hidden">
+                <div id="time-picker-hours" class="w-1/2 h-full overflow-y-scroll custom-scrollbar time-picker-column text-center text-4xl py-12"></div>
+                <div id="time-picker-minutes" class="w-1/2 h-full overflow-y-scroll custom-scrollbar time-picker-column text-center text-4xl py-12"></div>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div class="w-full h-12 bg-blue-500/10 border-y-2 border-blue-500"></div>
+                    <span class="absolute text-4xl text-white">:</span>
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="button" id="time-picker-cancel" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">İptal</button>
+                <button type="button" id="time-picker-ok" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Tamam</button>
+            </div>
         </div>
     </div>
 
@@ -165,6 +189,14 @@
             const editModalBackdrop = document.getElementById('edit-modal-backdrop');
             const editForm = document.getElementById('edit-event-form');
             const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            
+            // Zaman Seçici DOM Elementleri
+            const timePickerModal = document.getElementById('time-picker-modal');
+            const timePickerHours = document.getElementById('time-picker-hours');
+            const timePickerMinutes = document.getElementById('time-picker-minutes');
+            const timePickerOkBtn = document.getElementById('time-picker-ok');
+            const timePickerCancelBtn = document.getElementById('time-picker-cancel');
+            let activeTimeInput = null;
 
             // Saat yüzeyini çizen fonksiyon
             function drawClockFace() {
@@ -233,6 +265,50 @@
                     }
                     svg_numbers.appendChild(numberText);
                 }
+            }
+            
+            // Zaman Seçici Fonksiyonları
+            function setupTimePicker() {
+                for(let i = 0; i < 24; i++) {
+                    const hourEl = document.createElement('span');
+                    hourEl.textContent = i.toString().padStart(2, '0');
+                    hourEl.className = 'block h-12 flex items-center justify-center';
+                    timePickerHours.appendChild(hourEl);
+                }
+                 for(let i = 0; i < 60; i++) {
+                    const minuteEl = document.createElement('span');
+                    minuteEl.textContent = i.toString().padStart(2, '0');
+                    minuteEl.className = 'block h-12 flex items-center justify-center';
+                    timePickerMinutes.appendChild(minuteEl);
+                }
+            }
+            
+            function openTimePicker(targetInput) {
+                activeTimeInput = targetInput;
+                const [h, m] = activeTimeInput.value.split(':').map(Number);
+                
+                const hourElHeight = timePickerHours.querySelector('span').offsetHeight;
+                timePickerHours.scrollTop = h * hourElHeight;
+
+                const minuteElHeight = timePickerMinutes.querySelector('span').offsetHeight;
+                timePickerMinutes.scrollTop = m * minuteElHeight;
+
+                timePickerModal.classList.remove('hidden');
+            }
+            
+            function closeTimePicker() { timePickerModal.classList.add('hidden'); }
+
+            function handleTimePickerOk() {
+                if (activeTimeInput) {
+                    const hourElHeight = timePickerHours.querySelector('span').offsetHeight;
+                    const selectedHour = Math.round(timePickerHours.scrollTop / hourElHeight);
+
+                    const minuteElHeight = timePickerMinutes.querySelector('span').offsetHeight;
+                    const selectedMinute = Math.round(timePickerMinutes.scrollTop / minuteElHeight);
+                    
+                    activeTimeInput.value = `${selectedHour.toString().padStart(2, '0')}:${selectedMinute.toString().padStart(2, '0')}`;
+                }
+                closeTimePicker();
             }
 
             // Helper function to convert HH:MM string to minutes from midnight
@@ -353,7 +429,8 @@
             }
 
             function closeEditModal() { editModalBackdrop.classList.add('hidden'); }
-
+            
+            // Olay Dinleyicileri
             addForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const newEvent = { id: Date.now(), name: document.getElementById('event-name').value, start: document.getElementById('start-time').value, end: document.getElementById('end-time').value, color: document.getElementById('event-color').value };
@@ -379,6 +456,15 @@
 
             cancelEditBtn.addEventListener('click', closeEditModal);
             editModalBackdrop.addEventListener('click', (e) => { if (e.target === editModalBackdrop) { closeEditModal(); } });
+            
+            // Zaman seçici olay dinleyicileri
+            document.getElementById('start-time').addEventListener('click', (e) => openTimePicker(e.target));
+            document.getElementById('end-time').addEventListener('click', (e) => openTimePicker(e.target));
+            document.getElementById('edit-start-time').addEventListener('click', (e) => openTimePicker(e.target));
+            document.getElementById('edit-end-time').addEventListener('click', (e) => openTimePicker(e.target));
+            timePickerOkBtn.addEventListener('click', handleTimePickerOk);
+            timePickerCancelBtn.addEventListener('click', closeTimePicker);
+
 
             function timeToAngle(timeStr) { const [hours, minutes] = timeStr.split(':').map(Number); const totalMinutes = hours * 60 + minutes; return (totalMinutes / (24 * 60)) * 360 - 90; }
             function polarToCartesian(centerX, centerY, radius, angleInDegrees) { const angleInRadians = (angleInDegrees) * Math.PI / 180.0; return { x: centerX + (radius * Math.cos(angleInRadians)), y: centerY + (radius * Math.sin(angleInRadians)) }; }
@@ -391,7 +477,12 @@
                 hourHand.setAttribute('transform', `rotate(${hourAngle}, 250, 250)`);
                 minuteHand.setAttribute('transform', `rotate(${minuteAngle}, 250, 250)`);
             }
-            drawClockFace(); renderEvents(); updateClock(); setInterval(updateClock, 1000);
+            // Başlangıç Kurulumu
+            drawClockFace(); 
+            setupTimePicker();
+            renderEvents(); 
+            updateClock(); 
+            setInterval(updateClock, 1000);
         });
     </script>
     <script>
@@ -408,3 +499,4 @@
     </script>
 </body>
 </html>
+
