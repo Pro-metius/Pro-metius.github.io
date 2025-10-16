@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24 Saatlik Zaman Planlayıcı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- PWA için Manifest Dosyası -->
+    <link rel="manifest" href="manifest.json">
+    <!-- PWA için Tema Rengi -->
+    <meta name="theme-color" content="#1f2937"/>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #111827; /* Dark Blue-Gray background */
+            color: #f3f4f6; /* Light gray text */
+            overflow: hidden; /* Prevent scrolling */
+        }
+        .clock-title {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+        }
+        svg text {
+            font-family: 'Roboto', sans-serif;
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ and Edge */
+            user-select: none; /* Standard syntax */
+        }
+        /* Custom scrollbar for task list */
+        .task-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .task-list::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        .task-list::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+            border-radius: 10px;
+            border: 2px solid #1f2937;
+        }
+    </style>
+</head>
+<body class="w-full h-screen p-4 md:p-8">
+
+    <main class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full h-full">
+        <!-- Sol Sütun: Saat -->
+        <div class="flex flex-col items-center justify-center w-full h-full p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700">
+            <h1 class="clock-title text-2xl md:text-3xl text-center mb-4 text-gray-300">24-Saatlik Zaman Döngüsü</h1>
+            <svg id="sectograph-clock" class="w-full h-full max-w-xl" viewBox="0 0 500 500">
+                <defs id="pattern-defs"></defs>
+                <!-- Arka Plan ve Halkalar -->
+                <circle cx="250" cy="250" r="240" fill="none" stroke="#374151" stroke-width="4"/>
+                <circle cx="250" cy="250" r="230" fill="#1f2937" />
+                <circle cx="250" cy="250" r="180" fill="none" stroke="#4b5563" stroke-width="1" stroke-dasharray="4 4"/>
+                <circle cx="250" cy="250" r="100" fill="none" stroke="#4b5563" stroke-width="1" />
+
+                <!-- Etkinlikler için Katman -->
+                <g id="event-arcs"></g>
+                
+                <!-- Çentikler ve Rakamlar -->
+                <g id="ticks"></g>
+                <g id="numbers"></g>
+
+                <!-- Yelkovan ve Akrep -->
+                <g>
+                    <line id="hour-hand" x1="250" y1="250" x2="250" y2="150" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
+                    <line id="minute-hand" x1="250" y1="250" x2="250" y2="80" stroke="#93c5fd" stroke-width="6" stroke-linecap="round"/>
+                </g>
+
+                <!-- Merkez Nokta -->
+                <circle cx="250" cy="250" r="8" fill="#60a5fa"/>
+                <circle cx="250" cy="250" r="4" fill="#1f2937"/>
+            </svg>
+        </div>
+
+        <!-- Sağ Sütun: Görev Yöneticisi -->
+        <div class="flex flex-col w-full h-full p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700">
+            <h2 class="clock-title text-2xl md:text-3xl text-center mb-6 text-gray-300">Etkinlik Yöneticisi</h2>
+            
+            <!-- Görev Ekleme Formu -->
+            <form id="add-event-form" class="grid grid-cols-2 gap-4 mb-6">
+                <div class="col-span-2">
+                    <label for="event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label>
+                    <input type="text" id="event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label for="start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç</label>
+                    <input type="time" id="start-time" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label for="end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş</label>
+                    <input type="time" id="end-time" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="col-span-2 flex items-center gap-4">
+                     <label for="event-color" class="block text-sm font-medium text-gray-400">Renk</label>
+                     <input type="color" id="event-color" value="#3b82f6" class="bg-gray-700 rounded-md">
+                </div>
+                <div class="col-span-2">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Etkinlik Ekle</button>
+                </div>
+            </form>
+
+            <!-- Görev Listesi -->
+            <div class="flex-grow overflow-y-auto task-list pr-2">
+                <h3 class="text-xl font-medium text-gray-300 mb-4">Etkinlik Listesi</h3>
+                <ul id="event-list" class="space-y-3">
+                    <!-- Etkinlikler buraya dinamik olarak eklenecek -->
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Düzenleme Modalı -->
+    <div id="edit-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden">
+        <div class="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md border border-gray-700">
+            <h2 class="text-2xl font-bold text-white mb-6">Etkinliği Düzenle</h2>
+            <form id="edit-event-form">
+                <input type="hidden" id="edit-event-id">
+                <div class="mb-4">
+                    <label for="edit-event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label>
+                    <input type="text" id="edit-event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="edit-start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç</label>
+                        <input type="time" id="edit-start-time" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="edit-end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş</label>
+                        <input type="time" id="edit-end-time" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="mb-6">
+                     <label for="edit-event-color" class="block text-sm font-medium text-gray-400 mb-2">Renk</label>
+                     <input type="color" id="edit-event-color" class="bg-gray-700 rounded-md">
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="cancel-edit-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">İptal</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const centerX = 250;
+            const centerY = 250;
+            const eventArcRadius = 205;
+
+            let events = [
+                {id: 1, name: 'Proje Toplantısı', start: '09:00', end: '10:30', color: '#3b82f6'}
+            ];
+
+            // DOM Elementleri
+            const addForm = document.getElementById('add-event-form');
+            const eventList = document.getElementById('event-list');
+            const eventArcsContainer = document.getElementById('event-arcs');
+            const hourHand = document.getElementById('hour-hand');
+            const minuteHand = document.getElementById('minute-hand');
+            const editModalBackdrop = document.getElementById('edit-modal-backdrop');
+            const editForm = document.getElementById('edit-event-form');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
+            // Saat yüzeyini çizen fonksiyon
+            function drawClockFace() {
+                const svg_ticks = document.getElementById('ticks');
+                const svg_numbers = document.getElementById('numbers');
+                svg_ticks.innerHTML = '';
+                svg_numbers.innerHTML = '';
+
+                const radius = 195;
+                const tickOuterRadius = 230;
+                
+                for (let i = 0; i < 24 * 6; i++) {
+                    const totalMinutes = i * 10;
+                    const h = Math.floor(totalMinutes / 60);
+                    const m = totalMinutes % 60;
+                    const angle = ((totalMinutes / (24 * 60)) * 360) - 90;
+                    const angleRad = angle * (Math.PI / 180);
+                    const isHourTick = m === 0;
+                    const isMajorHourTick = isHourTick && (h % 6 === 0);
+
+                    let tickStartRadius, tickWidth, tickColor;
+                    if (isHourTick) {
+                        tickStartRadius = isMajorHourTick ? 215 : 220;
+                        tickWidth = isMajorHourTick ? '3' : '2';
+                        tickColor = isMajorHourTick ? '#60a5fa' : '#4b5563';
+                    } else {
+                        tickStartRadius = 225;
+                        tickWidth = '1';
+                        tickColor = '#4b5563';
+                    }
+                    const x1 = centerX + tickStartRadius * Math.cos(angleRad);
+                    const y1 = centerY + tickStartRadius * Math.sin(angleRad);
+                    const x2 = centerX + tickOuterRadius * Math.cos(angleRad);
+                    const y2 = centerY + tickOuterRadius * Math.sin(angleRad);
+                    const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    tick.setAttribute('x1', x1);
+                    tick.setAttribute('y1', y1);
+                    tick.setAttribute('x2', x2);
+                    tick.setAttribute('y2', y2);
+                    tick.setAttribute('stroke', tickColor);
+                    tick.setAttribute('stroke-width', tickWidth);
+                    svg_ticks.appendChild(tick);
+                }
+
+                for (let h = 0; h < 24; h++) {
+                    const angle = ((h / 24) * 360) - 90;
+                    const angleRad = angle * (Math.PI / 180);
+                    const isMajorTick = h % 6 === 0;
+                    const numX = centerX + radius * Math.cos(angleRad);
+                    const numY = centerY + radius * Math.sin(angleRad);
+
+                    const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    numberText.setAttribute('x', numX);
+                    numberText.setAttribute('y', numY);
+                    numberText.setAttribute('fill', isMajorTick ? '#93c5fd' : '#9ca3af');
+                    numberText.setAttribute('font-weight', isMajorTick ? '500' : '400');
+                    numberText.setAttribute('text-anchor', 'middle');
+                    numberText.setAttribute('dominant-baseline', 'central');
+
+                    if (h === 0) {
+                        numberText.setAttribute('font-size', '20');
+                        numberText.textContent = '24:00';
+                    } else {
+                        numberText.setAttribute('font-size', isMajorTick ? '22' : '16');
+                        numberText.textContent = h.toString().padStart(2, '0');
+                    }
+                    svg_numbers.appendChild(numberText);
+                }
+            }
+
+            // Helper function to convert HH:MM string to minutes from midnight
+            function timeToMinutes(timeStr) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            }
+
+            // Etkinlikleri hem listede hem de saatte render eden fonksiyon
+            function renderEvents() {
+                eventList.innerHTML = '';
+                eventArcsContainer.innerHTML = '';
+                const patternDefs = document.getElementById('pattern-defs');
+                if(patternDefs) patternDefs.innerHTML = ''; // Clear old patterns
+
+                if (events.length === 0) {
+                     eventList.innerHTML = `<p class="text-gray-500 text-center">Henüz etkinlik eklenmedi.</p>`;
+                     return;
+                }
+                
+                const sortedEvents = [...events].sort((a, b) => b.id - a.id);
+
+                sortedEvents.forEach(event => {
+                     const originalEvent = events.find(e => e.id === event.id);
+                    const li = document.createElement('li');
+                    li.className = 'bg-gray-700 p-3 rounded-lg flex items-center justify-between';
+                    li.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="w-4 h-4 rounded-full mr-3 flex-shrink-0" style="background-color: ${originalEvent.color};"></span>
+                            <div>
+                                <p class="font-semibold text-white">${originalEvent.name}</p>
+                                <p class="text-sm text-gray-400">${originalEvent.start} - ${originalEvent.end}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                             <button data-id="${originalEvent.id}" class="edit-btn text-gray-400 hover:text-white p-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="pointer-events: none;">
+                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                </svg>
+                             </button>
+                             <button data-id="${originalEvent.id}" class="delete-btn text-gray-500 hover:text-red-400 text-2xl leading-none px-2">&times;</button>
+                        </div>
+                    `;
+                    eventList.appendChild(li);
+
+                    const startAngle = timeToAngle(event.start);
+                    const endAngle = timeToAngle(event.end);
+                    if (timeToMinutes(event.end) < timeToMinutes(event.start)) {
+                        const arc1 = createArc(centerX, centerY, eventArcRadius, startAngle, 270);
+                        const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        path1.setAttribute('d', arc1); path1.setAttribute('fill', event.color); path1.setAttribute('fill-opacity', '0.6');
+                        eventArcsContainer.appendChild(path1);
+                        const arc2 = createArc(centerX, centerY, eventArcRadius, -90, endAngle);
+                        const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        path2.setAttribute('d', arc2); path2.setAttribute('fill', event.color); path2.setAttribute('fill-opacity', '0.6');
+                        eventArcsContainer.appendChild(path2);
+                    } else {
+                        const arc = createArc(centerX, centerY, eventArcRadius, startAngle, endAngle);
+                        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        path.setAttribute('d', arc); path.setAttribute('fill', event.color); path.setAttribute('fill-opacity', '0.6');
+                        eventArcsContainer.appendChild(path);
+                    }
+                });
+
+                const drawnPatterns = {};
+                for (let i = 0; i < sortedEvents.length; i++) {
+                    for (let j = i + 1; j < sortedEvents.length; j++) {
+                        const event1 = sortedEvents[i]; const event2 = sortedEvents[j];
+                        const findOverlapSegments = (ev1, ev2) => {
+                            let s1 = timeToMinutes(ev1.start), e1 = timeToMinutes(ev1.end);
+                            let s2 = timeToMinutes(ev2.start), e2 = timeToMinutes(ev2.end);
+                            const segments1 = (e1 < s1) ? [{s: s1, e: 1440}, {s: 0, e: e1}] : [{s: s1, e: e1}];
+                            const segments2 = (e2 < s2) ? [{s: s2, e: 1440}, {s: 0, e: e2}] : [{s: s2, e: e2}];
+                            const overlaps = [];
+                            for (const seg1 of segments1) {
+                                for (const seg2 of segments2) {
+                                    const oStart = Math.max(seg1.s, seg2.s);
+                                    const oEnd = Math.min(seg1.e, seg2.e);
+                                    if (oStart < oEnd) overlaps.push({ start: oStart, end: oEnd });
+                                }
+                            }
+                            return overlaps;
+                        };
+                        const overlapSegments = findOverlapSegments(event1, event2);
+                        if (overlapSegments.length > 0) {
+                            const overlapColor = event1.color; const patternId = `pattern-${overlapColor.replace('#', '')}`;
+                            if (!drawnPatterns[patternId]) {
+                                const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+                                pattern.setAttribute('id', patternId); pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+                                pattern.setAttribute('width', '8'); pattern.setAttribute('height', '8');
+                                pattern.setAttribute('patternTransform', 'rotate(45)');
+                                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                                line.setAttribute('x1', '0'); line.setAttribute('y1', '0'); line.setAttribute('x2', '0'); line.setAttribute('y2', '8');
+                                line.setAttribute('stroke', overlapColor); line.setAttribute('stroke-width', '4');
+                                pattern.appendChild(line); patternDefs.appendChild(pattern);
+                                drawnPatterns[patternId] = true;
+                            }
+                            for (const segment of overlapSegments) {
+                                const startAngle = (segment.start / 1440) * 360 - 90; const endAngle = (segment.end / 1440) * 360 - 90;
+                                const arc = createArc(centerX, centerY, eventArcRadius, startAngle, endAngle);
+                                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                                path.setAttribute('d', arc); path.setAttribute('fill', `url(#${patternId})`);
+                                eventArcsContainer.appendChild(path);
+                            }
+                        }
+                    }
+                }
+            }
+
+            function openEditModal(eventId) {
+                const event = events.find(e => e.id === eventId); if (!event) return;
+                document.getElementById('edit-event-id').value = event.id;
+                document.getElementById('edit-event-name').value = event.name;
+                document.getElementById('edit-start-time').value = event.start;
+                document.getElementById('edit-end-time').value = event.end;
+                document.getElementById('edit-event-color').value = event.color;
+                editModalBackdrop.classList.remove('hidden');
+            }
+
+            function closeEditModal() { editModalBackdrop.classList.add('hidden'); }
+
+            addForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newEvent = { id: Date.now(), name: document.getElementById('event-name').value, start: document.getElementById('start-time').value, end: document.getElementById('end-time').value, color: document.getElementById('event-color').value };
+                events.push(newEvent); renderEvents(); addForm.reset(); document.getElementById('event-color').value = '#3b82f6';
+            });
+            
+            editForm.addEventListener('submit', (e) => {
+                 e.preventDefault();
+                 const eventId = parseInt(document.getElementById('edit-event-id').value);
+                 const eventIndex = events.findIndex(event => event.id === eventId);
+                 if (eventIndex > -1) {
+                     events[eventIndex] = { id: eventId, name: document.getElementById('edit-event-name').value, start: document.getElementById('edit-start-time').value, end: document.getElementById('edit-end-time').value, color: document.getElementById('edit-event-color').value };
+                     renderEvents(); closeEditModal();
+                 }
+            });
+
+            eventList.addEventListener('click', (e) => {
+                const target = e.target.closest('button'); if (!target) return;
+                const eventId = parseInt(target.dataset.id);
+                if (target.classList.contains('delete-btn')) { events = events.filter(event => event.id !== eventId); renderEvents(); } 
+                else if (target.classList.contains('edit-btn')) { openEditModal(eventId); }
+            });
+
+            cancelEditBtn.addEventListener('click', closeEditModal);
+            editModalBackdrop.addEventListener('click', (e) => { if (e.target === editModalBackdrop) { closeEditModal(); } });
+
+            function timeToAngle(timeStr) { const [hours, minutes] = timeStr.split(':').map(Number); const totalMinutes = hours * 60 + minutes; return (totalMinutes / (24 * 60)) * 360 - 90; }
+            function polarToCartesian(centerX, centerY, radius, angleInDegrees) { const angleInRadians = (angleInDegrees) * Math.PI / 180.0; return { x: centerX + (radius * Math.cos(angleInRadians)), y: centerY + (radius * Math.sin(angleInRadians)) }; }
+            function createArc(x, y, radius, startAngle, endAngle) { if (endAngle < startAngle) { endAngle += 360; } const start = polarToCartesian(x, y, radius, endAngle); const end = polarToCartesian(x, y, radius, startAngle); const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"; const d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y, "L", x, y, "Z"].join(" "); return d; }
+
+            function updateClock() {
+                const now = new Date(); const hours = now.getHours(); const minutes = now.getMinutes(); const seconds = now.getSeconds();
+                const totalMinutesInDay = hours * 60 + minutes; const hourAngle = (totalMinutesInDay / 1440) * 360 - 90;
+                const totalSecondsInHour = minutes * 60 + seconds; const minuteAngle = (totalSecondsInHour / 3600) * 360 - 90;
+                hourHand.setAttribute('transform', `rotate(${hourAngle}, 250, 250)`);
+                minuteHand.setAttribute('transform', `rotate(${minuteAngle}, 250, 250)`);
+            }
+            drawClockFace(); renderEvents(); updateClock(); setInterval(updateClock, 1000);
+        });
+    </script>
+    <script>
+      // PWA için Service Worker'ı kaydet
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('ServiceWorker kaydedildi: ', registration);
+          }).catch(registrationError => {
+            console.log('ServiceWorker kaydı başarısız: ', registrationError);
+          });
+        });
+      }
+    </script>
+</body>
+</html>
