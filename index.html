@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>24 Saatlik Zaman Planlayıcı (v5)</title>
+    <title>24 Saatlik Zaman Planlayıcı</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- PWA için Manifest Dosyası -->
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#111827"/>
     <style>
         body { font-family: 'Roboto', sans-serif; background-color: #111827; color: #f3f4f6; }
@@ -23,62 +21,31 @@
         
         /* Modern Buton Stilleri */
         .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
         }
         .recurrence-label, .day-label {
-            display: inline-block;
-            padding: 0.25rem 0.75rem; /* py-1 px-3 */
-            background-color: #374151; /* gray-700 */
-            color: #d1d5db; /* gray-300 */
-            border: 1px solid #4b5563; /* gray-600 */
-            border-radius: 9999px; /* rounded-full */
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            user-select: none;
+            display: inline-block; padding: 0.25rem 0.75rem; background-color: #374151;
+            color: #d1d5db; border: 1px solid #4b5563; border-radius: 9999px;
+            cursor: pointer; transition: all 0.2s ease-in-out; user-select: none;
         }
-        .recurrence-label:hover, .day-label:hover {
-            background-color: #4b5563; /* gray-600 */
-        }
+        .recurrence-label:hover, .day-label:hover { background-color: #4b5563; }
         input[type="radio"]:checked + .recurrence-label,
         input[type="checkbox"]:checked + .day-label {
-            background-color: #3b82f6; /* blue-600 */
-            color: #ffffff; /* white */
-            border-color: #2563eb; /* blue-700 */
-            font-weight: 500;
+            background-color: #3b82f6; color: #ffffff;
+            border-color: #2563eb; font-weight: 500;
         }
         
         /* Tam Yuvarlak Renk Seçici */
         input[type="color"] {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 2.5rem; /* 40px */
-            height: 2.5rem; /* 40px */
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 0;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            width: 2.5rem; height: 2.5rem; background-color: transparent;
+            border: none; cursor: pointer; padding: 0;
         }
-        input[type="color"]::-webkit-color-swatch {
-            border-radius: 50%;
-            border: 2px solid #4b5563;
-            padding: 0;
-        }
-        input[type="color"]::-moz-color-swatch {
-            border-radius: 50%;
-            border: 2px solid #4b5563;
-            padding: 0;
-        }
+        input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 2px solid #4b5563; padding: 0; }
+        input[type="color"]::-moz-color-swatch { border-radius: 50%; border: 2px solid #4b5563; padding: 0; }
 
-        /* Gün geçişi ve güncelleme animasyonları */
+        /* Animasyonlar */
         @keyframes fade-out { from { opacity: 0.5; } to { opacity: 0; } }
         @keyframes fade-in { from { opacity: 0; } to { opacity: 0.5; } }
         .arc-fade-out { animation: fade-out 0.5s ease-in-out forwards; }
@@ -87,7 +54,7 @@
 </head>
 <body class="w-full min-h-screen bg-gray-900 p-4 md:p-8">
     <main class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full md:h-[calc(100vh-4rem)]">
-        <!-- Sol Sütun: Saat (Dikeyde üste gelir) -->
+        <!-- Sol Sütun: Saat -->
         <div class="flex flex-col items-center justify-center w-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 md:h-full">
             <h1 class="clock-title text-xl md:text-2xl text-center mb-2 text-gray-300">24-Saatlik Zaman Döngüsü</h1>
             <svg id="sectograph-clock" class="w-full h-full max-w-xl aspect-square" viewBox="0 0 600 600">
@@ -100,16 +67,14 @@
                 <g id="ticks"></g>
                 <g id="numbers"></g>
                 <g>
-                    <!-- Uzun çubuk Akrep (saat) -->
                     <line id="hour-hand" x1="300" y1="300" x2="300" y2="96" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
-                    <!-- Kısa çubuk Yelkovan (dakika) -->
                     <line id="minute-hand" x1="300" y1="300" x2="300" y2="180" stroke="#93c5fd" stroke-width="6" stroke-linecap="round"/>
                 </g>
                 <circle cx="300" cy="300" r="8" fill="#60a5fa"/>
                 <circle cx="300" cy="300" r="4" fill="#1f2937"/>
             </svg>
         </div>
-        <!-- Sağ Sütun: Görev Yöneticisi (Dikeyde alta gelir) -->
+        <!-- Sağ Sütun: Görev Yöneticisi -->
         <div class="flex flex-col w-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 md:h-full md:overflow-hidden">
             <h2 class="clock-title text-xl md:text-2xl text-center mb-4 text-gray-300 flex-shrink-0">Etkinlik Yöneticisi</h2>
             <form id="add-event-form" class="grid grid-cols-2 gap-x-4 gap-y-5 mb-4 flex-shrink-0">
@@ -185,6 +150,21 @@
             </form>
         </div>
     </div>
+    <!-- Manuel Saat Kurulum Modalı -->
+    <div id="manual-time-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-sm border border-gray-700">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Saati Manuel Kur</h2>
+            <p class="text-gray-400 text-center mb-6">Lütfen başlangıç saatini girin (SSDD). Uygulama bu saatten itibaren saymaya devam edecektir.</p>
+            <form id="manual-time-form">
+                <div class="flex justify-center items-center gap-4 mb-8">
+                    <input type="text" id="manual-hour" inputmode="numeric" maxlength="2" placeholder="SS" required class="time-input w-24 bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white text-4xl text-center focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <span class="text-4xl text-gray-500">:</span>
+                    <input type="text" id="manual-minute" inputmode="numeric" maxlength="2" placeholder="DD" required class="time-input w-24 bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white text-4xl text-center focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Saati Başlat</button>
+            </form>
+        </div>
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- DOM Elementleri ---
@@ -198,6 +178,8 @@
             const cancelEditBtn = document.getElementById('cancel-edit-btn');
             const addCustomDaySelector = document.getElementById('custom-day-selector');
             const editCustomDaySelector = document.getElementById('edit-custom-day-selector');
+            const manualTimeModal = document.getElementById('manual-time-modal');
+            const manualTimeForm = document.getElementById('manual-time-form');
 
             const scaleFactor = 1.2;
             const centerX = 250 * scaleFactor;
@@ -206,6 +188,8 @@
             
             let events = [];
             let currentDay = -1; 
+            let totalSecondsFromMidnight = 0;
+            let clockIntervalId = null;
 
             function saveEventsToLocal() { localStorage.setItem('sectographEvents', JSON.stringify(events)); }
             function loadEventsFromLocal() {
@@ -557,25 +541,81 @@
             }
 
             function updateClock() {
-                const now = new Date();
-                const newDay = now.getDay();
+                if (clockIntervalId === null) return; // Don't run if not started
+
+                totalSecondsFromMidnight++;
+                
+                const totalSecondsToday = totalSecondsFromMidnight % (24 * 3600);
+                const h = Math.floor(totalSecondsToday / 3600);
+                const m = Math.floor((totalSecondsToday % 3600) / 60);
+                const s = totalSecondsToday % 60;
+
+                const realNow = new Date();
+                const newDay = realNow.getDay();
+
                 if (newDay !== currentDay && currentDay !== -1) {
                     const oldArcs = eventArcsContainer.querySelectorAll('path');
                     oldArcs.forEach(arc => arc.classList.add('arc-fade-out'));
-                    setTimeout(() => { renderClockArcs(newDay, true); }, 500);
+                    setTimeout(() => {
+                        renderClockArcs(newDay, true);
+                    }, 500);
                 }
                 currentDay = newDay;
 
-                const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
                 const hourAngle = (h * 60 + m) / (24 * 60) * 360 - 90;
                 const minuteAngle = (m / 60 + s / 3600) * 360 - 90;
                 hourHand.setAttribute('transform', `rotate(${hourAngle}, ${centerX}, ${centerY})`);
                 minuteHand.setAttribute('transform', `rotate(${minuteAngle}, ${centerX}, ${centerY})`);
             }
             
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('./sw.js').then(r => console.log('SW registered'), e => console.log('SW reg failed: ', e));
+            function startClockInterval(startSeconds) {
+                if(clockIntervalId) {
+                    clearInterval(clockIntervalId);
+                }
+                totalSecondsFromMidnight = startSeconds;
+                updateClock();
+                clockIntervalId = setInterval(updateClock, 1000);
+            }
+
+            function setupManualTime() {
+                const savedTimeData = localStorage.getItem('sectographManualTime');
+                if (savedTimeData) {
+                    try {
+                        const { referenceTotalSeconds, savedAt } = JSON.parse(savedTimeData);
+                        const elapsedSeconds = Math.floor((Date.now() - savedAt) / 1000);
+                        const currentTotalSeconds = referenceTotalSeconds + elapsedSeconds;
+                        
+                        manualTimeModal.classList.add('hidden');
+                        startClockInterval(currentTotalSeconds);
+                    } catch(e) {
+                        console.error("Hatalı saat verisi, yeniden kurulum gerekli.", e);
+                        localStorage.removeItem('sectographManualTime');
+                        manualTimeModal.classList.remove('hidden');
+                    }
+                } else {
+                    manualTimeModal.classList.remove('hidden');
+                }
+
+                manualTimeForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const h = parseInt(document.getElementById('manual-hour').value, 10);
+                    const m = parseInt(document.getElementById('manual-minute').value, 10);
+
+                    if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) {
+                        alert('Lütfen geçerli bir saat (0-23) ve dakika (0-59) girin.');
+                        return;
+                    }
+
+                    const referenceTotalSeconds = h * 3600 + m * 60;
+                    
+                    const timeToSave = { 
+                        referenceTotalSeconds: referenceTotalSeconds,
+                        savedAt: Date.now() 
+                    };
+                    localStorage.setItem('sectographManualTime', JSON.stringify(timeToSave));
+
+                    manualTimeModal.classList.add('hidden');
+                    startClockInterval(referenceTotalSeconds);
                 });
             }
 
@@ -583,9 +623,7 @@
             events = loadEventsFromLocal();
             drawClockFace();
             renderEventsList();
-            renderClockArcs(new Date().getDay());
-            updateClock();
-            setInterval(updateClock, 1000);
+            setupManualTime();
         });
     </script>
 </body>
