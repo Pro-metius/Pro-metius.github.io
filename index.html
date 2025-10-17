@@ -20,6 +20,69 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 10px; border: 2px solid #1f2937; }
         input[type="text"].time-input::placeholder { color: #9ca3af; }
         input[type="text"].time-input.invalid-time { border-color: #ef4444 !important; }
+        
+        /* Modern Buton Stilleri */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        .recurrence-label, .day-label {
+            display: inline-block;
+            padding: 0.25rem 0.75rem; /* py-1 px-3 */
+            background-color: #374151; /* gray-700 */
+            color: #d1d5db; /* gray-300 */
+            border: 1px solid #4b5563; /* gray-600 */
+            border-radius: 9999px; /* rounded-full */
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            user-select: none;
+        }
+        .recurrence-label:hover, .day-label:hover {
+            background-color: #4b5563; /* gray-600 */
+        }
+        input[type="radio"]:checked + .recurrence-label,
+        input[type="checkbox"]:checked + .day-label {
+            background-color: #3b82f6; /* blue-600 */
+            color: #ffffff; /* white */
+            border-color: #2563eb; /* blue-700 */
+            font-weight: 500;
+        }
+        
+        /* Tam Yuvarlak Renk Seçici */
+        input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 2.5rem; /* 40px */
+            height: 2.5rem; /* 40px */
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border-radius: 50%;
+            border: 2px solid #4b5563;
+            padding: 0;
+        }
+        input[type="color"]::-moz-color-swatch {
+            border-radius: 50%;
+            border: 2px solid #4b5563;
+            padding: 0;
+        }
+
+        /* Gün geçişi animasyonları */
+        @keyframes fade-out { from { opacity: 0.6; } to { opacity: 0; } }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 0.6; } }
+        .arc-fade-out { animation: fade-out 0.5s ease-in-out forwards; }
+        .arc-fade-in { animation: fade-in 0.5s ease-in-out forwards; }
     </style>
 </head>
 <body class="w-full h-screen bg-gray-900 overflow-hidden p-4 md:p-8">
@@ -37,8 +100,10 @@
                 <g id="ticks"></g>
                 <g id="numbers"></g>
                 <g>
-                    <line id="hour-hand" x1="250" y1="250" x2="250" y2="150" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
-                    <line id="minute-hand" x1="250" y1="250" x2="250" y2="80" stroke="#93c5fd" stroke-width="6" stroke-linecap="round"/>
+                    <!-- Uzun çubuk Akrep (saat) -->
+                    <line id="hour-hand" x1="250" y1="250" x2="250" y2="80" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
+                    <!-- Kısa çubuk Yelkovan (dakika) -->
+                    <line id="minute-hand" x1="250" y1="250" x2="250" y2="150" stroke="#93c5fd" stroke-width="6" stroke-linecap="round"/>
                 </g>
                 <circle cx="250" cy="250" r="8" fill="#60a5fa"/>
                 <circle cx="250" cy="250" r="4" fill="#1f2937"/>
@@ -51,7 +116,32 @@
                 <div class="col-span-2"><label for="event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label><input type="text" id="event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 <div><label for="start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç (SS:DD)</label><input type="text" id="start-time" inputmode="numeric" maxlength="5" placeholder="09:30" required class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 <div><label for="end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş (SS:DD)</label><input type="text" id="end-time" inputmode="numeric" maxlength="5" placeholder="10:30" required class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                <div class="col-span-2 flex items-center gap-4"><label for="event-color" class="block text-sm font-medium text-gray-400">Renk</label><input type="color" id="event-color" value="#3b82f6" class="bg-gray-700 rounded-md"></div>
+                
+                <div class="col-span-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <label for="event-color" class="block text-sm font-medium text-gray-400">Renk</label>
+                        <input type="color" id="event-color" value="#3b82f6">
+                    </div>
+                    <fieldset class="flex items-center flex-wrap gap-2 text-sm">
+                        <legend class="sr-only">Tekrarlama Seçeneği</legend>
+                        <div><input type="radio" id="recurrence-weekday" name="recurrence" value="weekday" class="sr-only" checked><label for="recurrence-weekday" class="recurrence-label">Hafta içi</label></div>
+                        <div><input type="radio" id="recurrence-weekend" name="recurrence" value="weekend" class="sr-only"><label for="recurrence-weekend" class="recurrence-label">Hafta sonu</label></div>
+                        <div><input type="radio" id="recurrence-custom" name="recurrence" value="custom" class="sr-only"><label for="recurrence-custom" class="recurrence-label">Özel</label></div>
+                    </fieldset>
+                </div>
+
+                <div id="custom-day-selector" class="col-span-2 hidden">
+                    <div class="flex flex-wrap justify-around text-sm gap-2 p-2 bg-gray-900/50 rounded-lg">
+                        <div><input type="checkbox" name="custom_day" value="1" id="custom-day-1" class="sr-only"><label for="custom-day-1" class="day-label">Pzt</label></div>
+                        <div><input type="checkbox" name="custom_day" value="2" id="custom-day-2" class="sr-only"><label for="custom-day-2" class="day-label">Sal</label></div>
+                        <div><input type="checkbox" name="custom_day" value="3" id="custom-day-3" class="sr-only"><label for="custom-day-3" class="day-label">Çar</label></div>
+                        <div><input type="checkbox" name="custom_day" value="4" id="custom-day-4" class="sr-only"><label for="custom-day-4" class="day-label">Per</label></div>
+                        <div><input type="checkbox" name="custom_day" value="5" id="custom-day-5" class="sr-only"><label for="custom-day-5" class="day-label">Cum</label></div>
+                        <div><input type="checkbox" name="custom_day" value="6" id="custom-day-6" class="sr-only"><label for="custom-day-6" class="day-label">Cmt</label></div>
+                        <div><input type="checkbox" name="custom_day" value="0" id="custom-day-0" class="sr-only"><label for="custom-day-0" class="day-label">Paz</label></div>
+                    </div>
+                </div>
+
                 <div class="col-span-2"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Etkinlik Ekle</button></div>
             </form>
             <div class="flex-grow overflow-y-auto custom-scrollbar pr-2 min-h-0"><h3 class="text-xl font-medium text-gray-300 mb-4 flex-shrink-0">Etkinlik Listesi</h3><ul id="event-list" class="space-y-3"></ul></div>
@@ -68,7 +158,29 @@
                     <div><label for="edit-start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç (SS:DD)</label><input type="text" id="edit-start-time" inputmode="numeric" maxlength="5" required class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                     <div><label for="edit-end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş (SS:DD)</label><input type="text" id="edit-end-time" inputmode="numeric" maxlength="5" required class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 </div>
-                <div class="mb-6"><label for="edit-event-color" class="block text-sm font-medium text-gray-400 mb-2">Renk</label><input type="color" id="edit-event-color" class="bg-gray-700 rounded-md"></div>
+                <div class="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <label for="edit-event-color" class="block text-sm font-medium text-gray-400">Renk</label>
+                        <input type="color" id="edit-event-color">
+                    </div>
+                     <fieldset class="flex items-center flex-wrap gap-2 text-sm">
+                        <legend class="sr-only">Tekrarlama Seçeneği</legend>
+                        <div><input type="radio" id="edit-recurrence-weekday" name="edit-recurrence" value="weekday" class="sr-only"><label for="edit-recurrence-weekday" class="recurrence-label">Hafta içi</label></div>
+                        <div><input type="radio" id="edit-recurrence-weekend" name="edit-recurrence" value="weekend" class="sr-only"><label for="edit-recurrence-weekend" class="recurrence-label">Hafta sonu</label></div>
+                        <div><input type="radio" id="edit-recurrence-custom" name="edit-recurrence" value="custom" class="sr-only"><label for="edit-recurrence-custom" class="recurrence-label">Özel</label></div>
+                    </fieldset>
+                </div>
+                 <div id="edit-custom-day-selector" class="col-span-2 hidden mb-6">
+                    <div class="flex flex-wrap justify-around text-sm gap-2 p-2 bg-gray-900/50 rounded-lg">
+                        <div><input type="checkbox" name="edit_custom_day" value="1" id="edit-custom-day-1" class="sr-only"><label for="edit-custom-day-1" class="day-label">Pzt</label></div>
+                        <div><input type="checkbox" name="edit_custom_day" value="2" id="edit-custom-day-2" class="sr-only"><label for="edit-custom-day-2" class="day-label">Sal</label></div>
+                        <div><input type="checkbox" name="edit_custom_day" value="3" id="edit-custom-day-3" class="sr-only"><label for="edit-custom-day-3" class="day-label">Çar</label></div>
+                        <div><input type="checkbox" name="edit_custom_day" value="4" id="edit-custom-day-4" class="sr-only"><label for="edit-custom-day-4" class="day-label">Per</label></div>
+                        <div><input type="checkbox" name="edit_custom_day" value="5" id="edit-custom-day-5" class="sr-only"><label for="edit-custom-day-5" class="day-label">Cum</label></div>
+                        <div><input type="checkbox" name="edit_custom_day" value="6" id="edit-custom-day-6" class="sr-only"><label for="edit-custom-day-6" class="day-label">Cmt</label></div>
+                        <div><input type="checkbox" name="edit_custom_day" value="0" id="edit-custom-day-0" class="sr-only"><label for="edit-custom-day-0" class="day-label">Paz</label></div>
+                    </div>
+                </div>
                 <div class="flex justify-end gap-4"><button type="button" id="cancel-edit-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">İptal</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Kaydet</button></div>
             </form>
         </div>
@@ -84,9 +196,12 @@
             const editModalBackdrop = document.getElementById('edit-modal-backdrop');
             const editForm = document.getElementById('edit-event-form');
             const cancelEditBtn = document.getElementById('cancel-edit-btn');
-            
+            const addCustomDaySelector = document.getElementById('custom-day-selector');
+            const editCustomDaySelector = document.getElementById('edit-custom-day-selector');
+
             const centerX = 250, centerY = 250, eventArcRadius = 205;
             let events = [];
+            let currentDay = new Date().getDay(); // 0=Pazar, 1=Pazartesi ...
 
             // --- Veri Saklama Fonksiyonları (LocalStorage) ---
             function saveEventsToLocal() {
@@ -101,15 +216,14 @@
                         return Array.isArray(parsed) ? parsed : [];
                     } catch (e) { return []; }
                 }
-                return [{ id: Date.now(), name: 'Örnek Toplantı', start: '09:00', end: '10:30', color: '#3b82f6' }];
+                return [];
             }
 
             // --- Saat Arayüzü Çizim Fonksiyonları ---
             function drawClockFace() {
                 const ticks = document.getElementById('ticks');
                 const numbers = document.getElementById('numbers');
-                ticks.innerHTML = '';
-                numbers.innerHTML = '';
+                ticks.innerHTML = ''; numbers.innerHTML = '';
                 const radius = 195;
                 const tickOuterRadius = 230;
 
@@ -163,24 +277,37 @@
                     }
                     numbers.appendChild(numberText);
                 }
+
+                const minuteRadius = 130;
+                for (let i = 1; i <= 12; i++) {
+                    const minute = i * 5;
+                    const angle = (minute / 60) * 360 - 90;
+                    const angleRad = angle * (Math.PI / 180);
+                    const numX = centerX + minuteRadius * Math.cos(angleRad);
+                    const numY = centerY + minuteRadius * Math.sin(angleRad);
+                    const minuteText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    minuteText.setAttribute('x', numX); minuteText.setAttribute('y', numY);
+                    minuteText.setAttribute('fill', '#9ca3af'); minuteText.setAttribute('font-size', '14');
+                    minuteText.setAttribute('font-weight', '400');
+                    minuteText.setAttribute('text-anchor', 'middle');
+                    minuteText.setAttribute('dominant-baseline', 'central');
+                    minuteText.textContent = (minute === 60) ? '00' : minute.toString().padStart(2, '0');
+                    numbers.appendChild(minuteText);
+                }
             }
             
-            // --- Zaman Girdi Formatlama ve Doğrulama ---
             function handleTimeInput(event) {
                 const input = event.target;
                 const type = event.type;
-                
                 if (type === 'input') {
                     let value = input.value;
                     let digits = value.replace(/\D/g, '');
-
                     if (digits.length > 2) {
                         input.value = `${digits.substring(0, 2)}:${digits.substring(2, 4)}`;
                     } else {
                         input.value = digits;
                     }
-                } 
-                else if (type === 'blur') {
+                } else if (type === 'blur') {
                     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
                     if (input.value.length > 0 && !timeRegex.test(input.value)) {
                         input.classList.add('invalid-time');
@@ -190,23 +317,66 @@
                 }
             }
 
-            // --- Etkinlik (Event) Yönetim Fonksiyonları ---
-            function renderEvents() {
-                eventList.innerHTML = '';
-                eventArcsContainer.innerHTML = '';
-                const patternDefs = document.getElementById('pattern-defs');
-                if (patternDefs) patternDefs.innerHTML = '';
+            function getRecurrenceDaysHtml(recurrence) {
+                if (!recurrence) return '';
+                const dayNames = { '1': 'Pzt', '2': 'Sal', '3': 'Çar', '4': 'Per', '5': 'Cum', '6': 'Cmt', '0': 'Paz' };
+                let textToShow = '';
 
+                switch (recurrence.type) {
+                    case 'weekday':
+                        textToShow = "Hafta içi";
+                        break;
+                    case 'weekend':
+                        textToShow = "Hafta sonu";
+                        break;
+                    case 'custom':
+                        if (!recurrence.days || recurrence.days.length === 0) return '';
+                        const sortedDays = recurrence.days.sort((a, b) => (a === '0' ? 7 : parseInt(a)) - (b === '0' ? 7 : parseInt(b)));
+                        const dayNameArray = sortedDays.map(d => dayNames[d]);
+
+                        const chunkSize = 4;
+                        const chunks = [];
+                        for (let i = 0; i < dayNameArray.length; i += chunkSize) {
+                            chunks.push(dayNameArray.slice(i, i + chunkSize).join(', '));
+                        }
+                        textToShow = chunks.join('<br>');
+                        break;
+                    default:
+                        return '';
+                }
+
+                if (textToShow) {
+                    return `<div class="text-xs text-gray-400 text-right">${textToShow}</div>`;
+                }
+                return '';
+            }
+
+            function isEventOnDay(event, dayOfWeek) {
+                const recurrence = event.recurrence;
+                if (!recurrence) return true;
+                switch (recurrence.type) {
+                    case 'weekday':
+                        return dayOfWeek >= 1 && dayOfWeek <= 5;
+                    case 'weekend':
+                        return dayOfWeek === 0 || dayOfWeek === 6;
+                    case 'custom':
+                        return recurrence.days && recurrence.days.includes(String(dayOfWeek));
+                    default:
+                        return true;
+                }
+            }
+
+            function renderEventsList() {
+                eventList.innerHTML = '';
                 if (events.length === 0) {
                     eventList.innerHTML = `<p class="text-gray-500 text-center">Henüz etkinlik eklenmedi.</p>`;
                     return;
                 }
-
                 const sortedEvents = [...events].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
-                
                 sortedEvents.forEach(event => {
                     const li = document.createElement('li');
                     li.className = 'bg-gray-700 p-3 rounded-lg flex items-center justify-between';
+                    const recurrenceHtml = getRecurrenceDaysHtml(event.recurrence);
                     li.innerHTML = `
                         <div class="flex items-center overflow-hidden mr-2">
                             <span class="w-4 h-4 rounded-full mr-3 flex-shrink-0" style="background-color: ${event.color};"></span>
@@ -215,29 +385,47 @@
                                 <p class="text-sm text-gray-400">${event.start} - ${event.end}</p>
                             </div>
                         </div>
-                        <div class="flex items-center flex-shrink-0">
+                        <div class="flex items-center flex-shrink-0 gap-3">
+                            ${recurrenceHtml}
                             <button data-id="${event.id}" class="edit-btn text-gray-400 hover:text-white p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="pointer-events: none;"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="pointer-events: none;"><path fill-rule="evenodd" d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" clip-rule="evenodd" /></svg>
                             </button>
                             <button data-id="${event.id}" class="delete-btn text-gray-500 hover:text-red-400 text-2xl leading-none px-2">&times;</button>
                         </div>`;
                     eventList.appendChild(li);
+                });
+            }
+            
+            function renderClockArcs(dayOfWeek, isAnimating = false) {
+                eventArcsContainer.innerHTML = '';
+                const patternDefs = document.getElementById('pattern-defs');
+                if (patternDefs) patternDefs.innerHTML = '';
 
+                const eventsForToday = events.filter(event => isEventOnDay(event, dayOfWeek));
+                if (eventsForToday.length === 0) return;
+
+                const sortedEvents = [...eventsForToday].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+                
+                sortedEvents.forEach(event => {
                     const startAngle = timeToAngle(event.start);
                     const endAngle = timeToAngle(event.end);
                     if (timeToMinutes(event.end) < timeToMinutes(event.start)) {
                         const arc1 = createArc(centerX, centerY, eventArcRadius, startAngle, 270);
                         const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
                         path1.setAttribute('d', arc1); path1.setAttribute('fill', event.color); path1.setAttribute('fill-opacity', '0.6');
+                        if(isAnimating) path1.classList.add('arc-fade-in');
                         eventArcsContainer.appendChild(path1);
+                        
                         const arc2 = createArc(centerX, centerY, eventArcRadius, -90, endAngle);
                         const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
                         path2.setAttribute('d', arc2); path2.setAttribute('fill', event.color); path2.setAttribute('fill-opacity', '0.6');
+                        if(isAnimating) path2.classList.add('arc-fade-in');
                         eventArcsContainer.appendChild(path2);
                     } else {
                         const arc = createArc(centerX, centerY, eventArcRadius, startAngle, endAngle);
                         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
                         path.setAttribute('d', arc); path.setAttribute('fill', event.color); path.setAttribute('fill-opacity', '0.6');
+                        if(isAnimating) path.classList.add('arc-fade-in');
                         eventArcsContainer.appendChild(path);
                     }
                 });
@@ -267,8 +455,7 @@
                                     const patternId = `pattern-${overlapColor.replace('#', '')}`;
                                     if (!drawnPatterns[patternId]) {
                                         const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
-                                        pattern.setAttribute('id', patternId);
-                                        pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+                                        pattern.setAttribute('id', patternId); pattern.setAttribute('patternUnits', 'userSpaceOnUse');
                                         pattern.setAttribute('width', '8'); pattern.setAttribute('height', '8');
                                         pattern.setAttribute('patternTransform', 'rotate(45)');
                                         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -300,19 +487,43 @@
                     document.getElementById('edit-start-time').value = eventToEdit.start;
                     document.getElementById('edit-end-time').value = eventToEdit.end;
                     document.getElementById('edit-event-color').value = eventToEdit.color;
+
+                    const recurrenceType = eventToEdit.recurrence ? eventToEdit.recurrence.type : 'weekday';
+                    document.querySelector(`#edit-event-form input[name="edit-recurrence"][value="${recurrenceType}"]`).checked = true;
+                    
+                    const editCustomDays = document.querySelectorAll('#edit-event-form input[name="edit_custom_day"]');
+                    editCustomDays.forEach(cb => cb.checked = false);
+
+                    if(recurrenceType === 'custom') {
+                        editCustomDaySelector.classList.remove('hidden');
+                        if(eventToEdit.recurrence.days) {
+                            eventToEdit.recurrence.days.forEach(day => {
+                                const cb = document.querySelector(`#edit-event-form input[name="edit_custom_day"][value="${day}"]`);
+                                if (cb) cb.checked = true;
+                            });
+                        }
+                    } else {
+                        editCustomDaySelector.classList.add('hidden');
+                    }
                     editModalBackdrop.classList.remove('hidden');
                 }
             }
             function closeEditModal() { editModalBackdrop.classList.add('hidden'); }
 
-            // --- Olay Dinleyicileri (Event Listeners) ---
+            function getRecurrenceData(formPrefix) {
+                const type = document.querySelector(`#${formPrefix}-event-form input[name="${formPrefix === 'add' ? 'recurrence' : 'edit-recurrence'}"]:checked`).value;
+                const recurrence = { type };
+                if (type === 'custom') {
+                    recurrence.days = [...document.querySelectorAll(`#${formPrefix}-event-form input[name="${formPrefix === 'add' ? 'custom_day' : 'edit_custom_day'}"]:checked`)].map(cb => cb.value);
+                }
+                return recurrence;
+            }
+
             addForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const startTimeInput = document.getElementById('start-time');
                 const endTimeInput = document.getElementById('end-time');
                 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-
-                // Son kontrol
                 handleTimeInput({ target: startTimeInput, type: 'blur' });
                 handleTimeInput({ target: endTimeInput, type: 'blur' });
 
@@ -323,12 +534,16 @@
                         start: startTimeInput.value,
                         end: endTimeInput.value,
                         color: document.getElementById('event-color').value,
+                        recurrence: getRecurrenceData('add')
                     };
                     events.push(newEvent);
                     saveEventsToLocal();
-                    renderEvents();
+                    renderEventsList();
+                    renderClockArcs(currentDay);
                     addForm.reset();
                     document.getElementById('event-color').value = '#3b82f6';
+                    document.getElementById('recurrence-weekday').checked = true;
+                    addCustomDaySelector.classList.add('hidden');
                 } else {
                     alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.');
                 }
@@ -341,7 +556,6 @@
                 const startTimeInput = document.getElementById('edit-start-time');
                 const endTimeInput = document.getElementById('edit-end-time');
                 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-                
                 handleTimeInput({ target: startTimeInput, type: 'blur' });
                 handleTimeInput({ target: endTimeInput, type: 'blur' });
 
@@ -352,9 +566,11 @@
                         start: startTimeInput.value,
                         end: endTimeInput.value,
                         color: document.getElementById('edit-event-color').value,
+                        recurrence: getRecurrenceData('edit')
                     };
                     saveEventsToLocal();
-                    renderEvents();
+                    renderEventsList();
+                    renderClockArcs(currentDay);
                     closeEditModal();
                 } else {
                      alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.');
@@ -368,7 +584,8 @@
                 if (button.classList.contains('delete-btn')) {
                     events = events.filter(event => event.id !== eventId);
                     saveEventsToLocal();
-                    renderEvents();
+                    renderEventsList();
+                    renderClockArcs(currentDay);
                 } else if (button.classList.contains('edit-btn')) {
                     openEditModal(eventId);
                 }
@@ -383,7 +600,13 @@
                 input.addEventListener('blur', handleTimeInput);
             });
 
-            // --- Yardımcı Fonksiyonlar ---
+            document.querySelectorAll('#add-event-form input[name="recurrence"]').forEach(radio => {
+                radio.addEventListener('change', () => addCustomDaySelector.classList.toggle('hidden', radio.value !== 'custom'));
+            });
+            document.querySelectorAll('#edit-event-form input[name="edit-recurrence"]').forEach(radio => {
+                radio.addEventListener('change', () => editCustomDaySelector.classList.toggle('hidden', radio.value !== 'custom'));
+            });
+
             function timeToMinutes(timeStr) {
                 if (!timeStr || !timeStr.includes(':')) return 0;
                 const [hours, minutes] = timeStr.split(':').map(Number);
@@ -404,22 +627,43 @@
                 return ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y, "L", cx, cy, "Z"].join(" ");
             }
 
-            // --- Saat Güncelleme ---
             function updateClock() {
-                const now = new Date();
+                const now = new Date(); // Her zaman tabletin yerel saatini kullanır
+                const newDay = now.getDay();
+
+                if (newDay !== currentDay) {
+                    const oldArcs = eventArcsContainer.querySelectorAll('path');
+                    oldArcs.forEach(arc => arc.classList.add('arc-fade-out'));
+                    setTimeout(() => {
+                        renderClockArcs(newDay, true);
+                    }, 500); // Animasyon süresiyle eşleşmeli
+                    currentDay = newDay;
+                }
+
                 const h = now.getHours();
                 const m = now.getMinutes();
                 const s = now.getSeconds();
                 const hourAngle = (h * 60 + m) / (24 * 60) * 360 - 90;
-                const minuteAngle = (m * 60 + s) / 3600 * 360 - 90;
+                const minuteAngle = (m / 60 + s / 3600) * 360 - 90;
                 hourHand.setAttribute('transform', `rotate(${hourAngle}, 250, 250)`);
                 minuteHand.setAttribute('transform', `rotate(${minuteAngle}, 250, 250)`);
+            }
+            
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./sw.js').then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    }, err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+                });
             }
 
             // --- Başlatma ---
             events = loadEventsFromLocal();
             drawClockFace();
-            renderEvents();
+            renderEventsList();
+            renderClockArcs(currentDay);
             updateClock();
             setInterval(updateClock, 1000);
         });
