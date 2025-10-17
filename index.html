@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>24 Saatlik Zaman Planlayıcı</title>
+    <title>24 Saatlik Zaman Planlayıcı (v4)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,41 +78,41 @@
             padding: 0;
         }
 
-        /* Gün geçişi animasyonları */
-        @keyframes fade-out { from { opacity: 0.6; } to { opacity: 0; } }
-        @keyframes fade-in { from { opacity: 0; } to { opacity: 0.6; } }
+        /* Gün geçişi ve güncelleme animasyonları */
+        @keyframes fade-out { from { opacity: 0.5; } to { opacity: 0; } }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 0.5; } }
         .arc-fade-out { animation: fade-out 0.5s ease-in-out forwards; }
         .arc-fade-in { animation: fade-in 0.5s ease-in-out forwards; }
     </style>
 </head>
-<body class="w-full h-screen bg-gray-900 overflow-hidden p-4 md:p-8">
-    <main class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full h-full">
+<body class="w-full min-h-screen bg-gray-900 p-4 md:p-8">
+    <main class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full md:h-[calc(100vh-4rem)]">
         <!-- Sol Sütun: Saat (Dikeyde üste gelir) -->
         <div class="flex flex-col items-center justify-center w-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 md:h-full">
-            <h1 class="clock-title text-2xl md:text-3xl text-center mb-4 text-gray-300">24-Saatlik Zaman Döngüsü</h1>
-            <svg id="sectograph-clock" class="w-full h-full max-w-xl aspect-square" viewBox="0 0 500 500">
+            <h1 class="clock-title text-xl md:text-2xl text-center mb-2 text-gray-300">24-Saatlik Zaman Döngüsü</h1>
+            <svg id="sectograph-clock" class="w-full h-full max-w-xl aspect-square" viewBox="0 0 600 600">
                 <defs id="pattern-defs"></defs>
-                <circle cx="250" cy="250" r="240" fill="none" stroke="#374151" stroke-width="4"/>
-                <circle cx="250" cy="250" r="230" fill="#1f2937" />
-                <circle cx="250" cy="250" r="180" fill="none" stroke="#4b5563" stroke-width="1" stroke-dasharray="4 4"/>
-                <circle cx="250" cy="250" r="100" fill="none" stroke="#4b5563" stroke-width="1" />
-                <g id="event-arcs"></g>
+                <circle cx="300" cy="300" r="288" fill="none" stroke="#374151" stroke-width="4"/>
+                <circle cx="300" cy="300" r="276" fill="#1f2937" />
+                <g id="event-arcs"></g> 
+                <circle cx="300" cy="300" r="216" fill="none" stroke="#4b5563" stroke-width="1" stroke-dasharray="4 4"/>
+                <circle cx="300" cy="300" r="120" fill="none" stroke="#4b5563" stroke-width="1" />
                 <g id="ticks"></g>
                 <g id="numbers"></g>
                 <g>
                     <!-- Uzun çubuk Akrep (saat) -->
-                    <line id="hour-hand" x1="250" y1="250" x2="250" y2="80" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
+                    <line id="hour-hand" x1="300" y1="300" x2="300" y2="96" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
                     <!-- Kısa çubuk Yelkovan (dakika) -->
-                    <line id="minute-hand" x1="250" y1="250" x2="250" y2="150" stroke="#93c5fd" stroke-width="6" stroke-linecap="round"/>
+                    <line id="minute-hand" x1="300" y1="300" x2="300" y2="180" stroke="#93c5fd" stroke-width="6" stroke-linecap="round"/>
                 </g>
-                <circle cx="250" cy="250" r="8" fill="#60a5fa"/>
-                <circle cx="250" cy="250" r="4" fill="#1f2937"/>
+                <circle cx="300" cy="300" r="8" fill="#60a5fa"/>
+                <circle cx="300" cy="300" r="4" fill="#1f2937"/>
             </svg>
         </div>
         <!-- Sağ Sütun: Görev Yöneticisi (Dikeyde alta gelir) -->
-        <div class="flex flex-col w-full h-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 overflow-hidden">
-            <h2 class="clock-title text-2xl md:text-3xl text-center mb-6 text-gray-300 flex-shrink-0">Etkinlik Yöneticisi</h2>
-            <form id="add-event-form" class="grid grid-cols-2 gap-4 mb-6 flex-shrink-0">
+        <div class="flex flex-col w-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 md:h-full md:overflow-hidden">
+            <h2 class="clock-title text-xl md:text-2xl text-center mb-4 text-gray-300 flex-shrink-0">Etkinlik Yöneticisi</h2>
+            <form id="add-event-form" class="grid grid-cols-2 gap-x-4 gap-y-5 mb-4 flex-shrink-0">
                 <div class="col-span-2"><label for="event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label><input type="text" id="event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 <div><label for="start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç (SS:DD)</label><input type="text" id="start-time" inputmode="numeric" maxlength="5" placeholder="09:30" required class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 <div><label for="end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş (SS:DD)</label><input type="text" id="end-time" inputmode="numeric" maxlength="5" placeholder="10:30" required class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
@@ -150,15 +150,15 @@
     <!-- Düzenleme Modalı -->
     <div id="edit-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50">
         <div class="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md border border-gray-700">
-            <h2 class="text-2xl font-bold text-white mb-6">Etkinliği Düzenle</h2>
+            <h2 class="text-xl font-bold text-white mb-5">Etkinliği Düzenle</h2>
             <form id="edit-event-form">
                 <input type="hidden" id="edit-event-id">
-                <div class="mb-4"><label for="edit-event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label><input type="text" id="edit-event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="mb-5"><label for="edit-event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label><input type="text" id="edit-event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
+                <div class="grid grid-cols-2 gap-4 mb-5">
                     <div><label for="edit-start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç (SS:DD)</label><input type="text" id="edit-start-time" inputmode="numeric" maxlength="5" required class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                     <div><label for="edit-end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş (SS:DD)</label><input type="text" id="edit-end-time" inputmode="numeric" maxlength="5" required class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 </div>
-                <div class="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <label for="edit-event-color" class="block text-sm font-medium text-gray-400">Renk</label>
                         <input type="color" id="edit-event-color">
@@ -170,7 +170,7 @@
                         <div><input type="radio" id="edit-recurrence-custom" name="edit-recurrence" value="custom" class="sr-only"><label for="edit-recurrence-custom" class="recurrence-label">Özel</label></div>
                     </fieldset>
                 </div>
-                 <div id="edit-custom-day-selector" class="col-span-2 hidden mb-6">
+                 <div id="edit-custom-day-selector" class="col-span-2 hidden mb-5">
                     <div class="flex flex-wrap justify-around text-sm gap-2 p-2 bg-gray-900/50 rounded-lg">
                         <div><input type="checkbox" name="edit_custom_day" value="1" id="edit-custom-day-1" class="sr-only"><label for="edit-custom-day-1" class="day-label">Pzt</label></div>
                         <div><input type="checkbox" name="edit_custom_day" value="2" id="edit-custom-day-2" class="sr-only"><label for="edit-custom-day-2" class="day-label">Sal</label></div>
@@ -199,49 +199,45 @@
             const addCustomDaySelector = document.getElementById('custom-day-selector');
             const editCustomDaySelector = document.getElementById('edit-custom-day-selector');
 
-            const centerX = 250, centerY = 250, eventArcRadius = 205;
+            const scaleFactor = 1.2;
+            const centerX = 250 * scaleFactor;
+            const centerY = 250 * scaleFactor;
+            const eventArcRadius = 276;
+            
             let events = [];
-            let currentDay = new Date().getDay(); // 0=Pazar, 1=Pazartesi ...
+            let currentDay = new Date().getDay();
 
-            // --- Veri Saklama Fonksiyonları (LocalStorage) ---
-            function saveEventsToLocal() {
-                localStorage.setItem('sectographEvents', JSON.stringify(events));
-            }
-
+            function saveEventsToLocal() { localStorage.setItem('sectographEvents', JSON.stringify(events)); }
             function loadEventsFromLocal() {
                 const savedEvents = localStorage.getItem('sectographEvents');
-                if (savedEvents) {
-                    try {
-                        const parsed = JSON.parse(savedEvents);
-                        return Array.isArray(parsed) ? parsed : [];
-                    } catch (e) { return []; }
-                }
+                if (savedEvents) { try { const parsed = JSON.parse(savedEvents); return Array.isArray(parsed) ? parsed : []; } catch (e) { return []; } }
                 return [];
             }
 
-            // --- Saat Arayüzü Çizim Fonksiyonları ---
             function drawClockFace() {
                 const ticks = document.getElementById('ticks');
                 const numbers = document.getElementById('numbers');
                 ticks.innerHTML = ''; numbers.innerHTML = '';
-                const radius = 195;
-                const tickOuterRadius = 230;
+                
+                const radius = 195 * scaleFactor;
+                const tickOuterRadius = 230 * scaleFactor;
+                const tickInnerRadiusMajor = 215 * scaleFactor;
+                const tickInnerRadiusMinor = 220 * scaleFactor;
+                const tickInnerRadiusSmall = 225 * scaleFactor;
 
                 for (let i = 0; i < (24 * 6); i++) {
                     const totalMinutes = i * 10;
-                    const h = Math.floor(totalMinutes / 60);
-                    const m = totalMinutes % 60;
                     const angle = (totalMinutes / (24 * 60)) * 360 - 90;
                     const angleRad = angle * (Math.PI / 180);
-                    const isHourTick = m === 0;
-                    const isMajorHourTick = isHourTick && (h % 6 === 0);
+                    const isHourTick = (totalMinutes % 60) === 0;
+                    const isMajorHourTick = isHourTick && ((totalMinutes / 60) % 6 === 0);
                     let tickStartRadius, tickWidth, tickColor;
                     if (isHourTick) {
-                        tickStartRadius = isMajorHourTick ? 215 : 220;
+                        tickStartRadius = isMajorHourTick ? tickInnerRadiusMajor : tickInnerRadiusMinor;
                         tickWidth = isMajorHourTick ? '3' : '2';
                         tickColor = isMajorHourTick ? '#60a5fa' : '#4b5563';
                     } else {
-                        tickStartRadius = 225;
+                        tickStartRadius = tickInnerRadiusSmall;
                         tickWidth = '1';
                         tickColor = '#4b5563';
                     }
@@ -250,8 +246,7 @@
                     const x2 = centerX + tickOuterRadius * Math.cos(angleRad);
                     const y2 = centerY + tickOuterRadius * Math.sin(angleRad);
                     const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    tick.setAttribute('x1', x1); tick.setAttribute('y1', y1);
-                    tick.setAttribute('x2', x2); tick.setAttribute('y2', y2);
+                    tick.setAttribute('x1', x1); tick.setAttribute('y1', y1); tick.setAttribute('x2', x2); tick.setAttribute('y2', y2);
                     tick.setAttribute('stroke', tickColor); tick.setAttribute('stroke-width', tickWidth);
                     ticks.appendChild(tick);
                 }
@@ -264,21 +259,21 @@
                     const numY = centerY + radius * Math.sin(angleRad);
                     const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
                     numberText.setAttribute('x', numX); numberText.setAttribute('y', numY);
-                    numberText.setAttribute('fill', isMajorTick ? '#93c5fd' : '#9ca3af');
+                    numberText.setAttribute('fill', isMajorTick ? '#93c5fd' : '#e5e7eb');
                     numberText.setAttribute('font-weight', isMajorTick ? '500' : '400');
                     numberText.setAttribute('text-anchor', 'middle');
                     numberText.setAttribute('dominant-baseline', 'central');
                     if (h === 0) {
-                        numberText.setAttribute('font-size', '20');
-                        numberText.textContent = '24:00';
+                        numberText.setAttribute('font-size', `${20 * 1.2}`);
+                        numberText.textContent = '00';
                     } else {
-                        numberText.setAttribute('font-size', isMajorTick ? '22' : '16');
+                        numberText.setAttribute('font-size', isMajorTick ? `${22 * 1.2}` : `${16 * 1.2}`);
                         numberText.textContent = h.toString().padStart(2, '0');
                     }
                     numbers.appendChild(numberText);
                 }
 
-                const minuteRadius = 130;
+                const minuteRadius = 130 * scaleFactor;
                 for (let i = 1; i <= 12; i++) {
                     const minute = i * 5;
                     const angle = (minute / 60) * 360 - 90;
@@ -287,8 +282,9 @@
                     const numY = centerY + minuteRadius * Math.sin(angleRad);
                     const minuteText = document.createElementNS("http://www.w3.org/2000/svg", "text");
                     minuteText.setAttribute('x', numX); minuteText.setAttribute('y', numY);
-                    minuteText.setAttribute('fill', '#9ca3af'); minuteText.setAttribute('font-size', '14');
-                    minuteText.setAttribute('font-weight', '400');
+                    minuteText.setAttribute('fill', '#d1d5db');
+                    minuteText.setAttribute('font-size', `${15 * 1.2}`);
+                    minuteText.setAttribute('font-weight', '500');
                     minuteText.setAttribute('text-anchor', 'middle');
                     minuteText.setAttribute('dominant-baseline', 'central');
                     minuteText.textContent = (minute === 60) ? '00' : minute.toString().padStart(2, '0');
@@ -304,16 +300,10 @@
                     let digits = value.replace(/\D/g, '');
                     if (digits.length > 2) {
                         input.value = `${digits.substring(0, 2)}:${digits.substring(2, 4)}`;
-                    } else {
-                        input.value = digits;
-                    }
+                    } else { input.value = digits; }
                 } else if (type === 'blur') {
                     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-                    if (input.value.length > 0 && !timeRegex.test(input.value)) {
-                        input.classList.add('invalid-time');
-                    } else {
-                        input.classList.remove('invalid-time');
-                    }
+                    input.classList.toggle('invalid-time', input.value.length > 0 && !timeRegex.test(input.value));
                 }
             }
 
@@ -321,62 +311,36 @@
                 if (!recurrence) return '';
                 const dayNames = { '1': 'Pzt', '2': 'Sal', '3': 'Çar', '4': 'Per', '5': 'Cum', '6': 'Cmt', '0': 'Paz' };
                 let textToShow = '';
-
                 switch (recurrence.type) {
-                    case 'weekday':
-                        textToShow = "Hafta içi";
-                        break;
-                    case 'weekend':
-                        textToShow = "Hafta sonu";
-                        break;
+                    case 'weekday': textToShow = "Hafta içi"; break;
+                    case 'weekend': textToShow = "Hafta sonu"; break;
                     case 'custom':
                         if (!recurrence.days || recurrence.days.length === 0) return '';
                         const sortedDays = recurrence.days.sort((a, b) => (a === '0' ? 7 : parseInt(a)) - (b === '0' ? 7 : parseInt(b)));
-                        const dayNameArray = sortedDays.map(d => dayNames[d]);
-
-                        const chunkSize = 4;
-                        const chunks = [];
-                        for (let i = 0; i < dayNameArray.length; i += chunkSize) {
-                            chunks.push(dayNameArray.slice(i, i + chunkSize).join(', '));
-                        }
-                        textToShow = chunks.join('<br>');
+                        textToShow = sortedDays.map(d => dayNames[d]).join(', ');
                         break;
-                    default:
-                        return '';
+                    default: return '';
                 }
-
-                if (textToShow) {
-                    return `<div class="text-xs text-gray-400 text-right">${textToShow}</div>`;
-                }
-                return '';
+                return textToShow ? `<div class="text-xs text-gray-400 text-right max-w-[80px]">${textToShow}</div>` : '';
             }
 
             function isEventOnDay(event, dayOfWeek) {
                 const recurrence = event.recurrence;
                 if (!recurrence) return true;
                 switch (recurrence.type) {
-                    case 'weekday':
-                        return dayOfWeek >= 1 && dayOfWeek <= 5;
-                    case 'weekend':
-                        return dayOfWeek === 0 || dayOfWeek === 6;
-                    case 'custom':
-                        return recurrence.days && recurrence.days.includes(String(dayOfWeek));
-                    default:
-                        return true;
+                    case 'weekday': return dayOfWeek >= 1 && dayOfWeek <= 5;
+                    case 'weekend': return dayOfWeek === 0 || dayOfWeek === 6;
+                    case 'custom': return recurrence.days && recurrence.days.includes(String(dayOfWeek));
+                    default: return true;
                 }
             }
 
             function renderEventsList() {
                 eventList.innerHTML = '';
-                if (events.length === 0) {
-                    eventList.innerHTML = `<p class="text-gray-500 text-center">Henüz etkinlik eklenmedi.</p>`;
-                    return;
-                }
-                const sortedEvents = [...events].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
-                sortedEvents.forEach(event => {
+                if (events.length === 0) { eventList.innerHTML = `<p class="text-gray-500 text-center">Henüz etkinlik eklenmedi.</p>`; return; }
+                [...events].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start)).forEach(event => {
                     const li = document.createElement('li');
                     li.className = 'bg-gray-700 p-3 rounded-lg flex items-center justify-between';
-                    const recurrenceHtml = getRecurrenceDaysHtml(event.recurrence);
                     li.innerHTML = `
                         <div class="flex items-center overflow-hidden mr-2">
                             <span class="w-4 h-4 rounded-full mr-3 flex-shrink-0" style="background-color: ${event.color};"></span>
@@ -386,10 +350,8 @@
                             </div>
                         </div>
                         <div class="flex items-center flex-shrink-0 gap-3">
-                            ${recurrenceHtml}
-                            <button data-id="${event.id}" class="edit-btn text-gray-400 hover:text-white p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="pointer-events: none;"><path fill-rule="evenodd" d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" clip-rule="evenodd" /></svg>
-                            </button>
+                            ${getRecurrenceDaysHtml(event.recurrence)}
+                            <button data-id="${event.id}" class="edit-btn text-gray-400 hover:text-white p-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="pointer-events: none;"><path fill-rule="evenodd" d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" clip-rule="evenodd" /></svg></button>
                             <button data-id="${event.id}" class="delete-btn text-gray-500 hover:text-red-400 text-2xl leading-none px-2">&times;</button>
                         </div>`;
                     eventList.appendChild(li);
@@ -412,19 +374,19 @@
                     if (timeToMinutes(event.end) < timeToMinutes(event.start)) {
                         const arc1 = createArc(centerX, centerY, eventArcRadius, startAngle, 270);
                         const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        path1.setAttribute('d', arc1); path1.setAttribute('fill', event.color); path1.setAttribute('fill-opacity', '0.6');
+                        path1.setAttribute('d', arc1); path1.setAttribute('fill', event.color); path1.setAttribute('fill-opacity', '0.5');
                         if(isAnimating) path1.classList.add('arc-fade-in');
                         eventArcsContainer.appendChild(path1);
                         
                         const arc2 = createArc(centerX, centerY, eventArcRadius, -90, endAngle);
                         const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        path2.setAttribute('d', arc2); path2.setAttribute('fill', event.color); path2.setAttribute('fill-opacity', '0.6');
+                        path2.setAttribute('d', arc2); path2.setAttribute('fill', event.color); path2.setAttribute('fill-opacity', '0.5');
                         if(isAnimating) path2.classList.add('arc-fade-in');
                         eventArcsContainer.appendChild(path2);
                     } else {
                         const arc = createArc(centerX, centerY, eventArcRadius, startAngle, endAngle);
                         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        path.setAttribute('d', arc); path.setAttribute('fill', event.color); path.setAttribute('fill-opacity', '0.6');
+                        path.setAttribute('d', arc); path.setAttribute('fill', event.color); path.setAttribute('fill-opacity', '0.5');
                         if(isAnimating) path.classList.add('arc-fade-in');
                         eventArcsContainer.appendChild(path);
                     }
@@ -487,13 +449,10 @@
                     document.getElementById('edit-start-time').value = eventToEdit.start;
                     document.getElementById('edit-end-time').value = eventToEdit.end;
                     document.getElementById('edit-event-color').value = eventToEdit.color;
-
                     const recurrenceType = eventToEdit.recurrence ? eventToEdit.recurrence.type : 'weekday';
                     document.querySelector(`#edit-event-form input[name="edit-recurrence"][value="${recurrenceType}"]`).checked = true;
-                    
                     const editCustomDays = document.querySelectorAll('#edit-event-form input[name="edit_custom_day"]');
                     editCustomDays.forEach(cb => cb.checked = false);
-
                     if(recurrenceType === 'custom') {
                         editCustomDaySelector.classList.remove('hidden');
                         if(eventToEdit.recurrence.days) {
@@ -519,6 +478,14 @@
                 return recurrence;
             }
 
+            function animateArcUpdate() {
+                const oldArcs = eventArcsContainer.querySelectorAll('path');
+                oldArcs.forEach(arc => arc.classList.add('arc-fade-out'));
+                setTimeout(() => {
+                    renderClockArcs(currentDay, true); // true for isAnimating
+                }, 500);
+            }
+
             addForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const startTimeInput = document.getElementById('start-time');
@@ -539,7 +506,7 @@
                     events.push(newEvent);
                     saveEventsToLocal();
                     renderEventsList();
-                    renderClockArcs(currentDay);
+                    animateArcUpdate();
                     addForm.reset();
                     document.getElementById('event-color').value = '#3b82f6';
                     document.getElementById('recurrence-weekday').checked = true;
@@ -570,7 +537,7 @@
                     };
                     saveEventsToLocal();
                     renderEventsList();
-                    renderClockArcs(currentDay);
+                    animateArcUpdate();
                     closeEditModal();
                 } else {
                      alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.');
@@ -585,7 +552,7 @@
                     events = events.filter(event => event.id !== eventId);
                     saveEventsToLocal();
                     renderEventsList();
-                    renderClockArcs(currentDay);
+                    animateArcUpdate();
                 } else if (button.classList.contains('edit-btn')) {
                     openEditModal(eventId);
                 }
@@ -628,7 +595,7 @@
             }
 
             function updateClock() {
-                const now = new Date(); // Her zaman tabletin yerel saatini kullanır
+                const now = new Date();
                 const newDay = now.getDay();
 
                 if (newDay !== currentDay) {
@@ -636,7 +603,7 @@
                     oldArcs.forEach(arc => arc.classList.add('arc-fade-out'));
                     setTimeout(() => {
                         renderClockArcs(newDay, true);
-                    }, 500); // Animasyon süresiyle eşleşmeli
+                    }, 500);
                     currentDay = newDay;
                 }
 
@@ -645,17 +612,13 @@
                 const s = now.getSeconds();
                 const hourAngle = (h * 60 + m) / (24 * 60) * 360 - 90;
                 const minuteAngle = (m / 60 + s / 3600) * 360 - 90;
-                hourHand.setAttribute('transform', `rotate(${hourAngle}, 250, 250)`);
-                minuteHand.setAttribute('transform', `rotate(${minuteAngle}, 250, 250)`);
+                hourHand.setAttribute('transform', `rotate(${hourAngle}, ${centerX}, ${centerY})`);
+                minuteHand.setAttribute('transform', `rotate(${minuteAngle}, ${centerX}, ${centerY})`);
             }
             
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('./sw.js').then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    }, err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
+                    navigator.serviceWorker.register('./sw.js').then(r => console.log('SW registered'), e => console.log('SW reg failed: ', e));
                 });
             }
 
