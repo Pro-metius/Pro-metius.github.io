@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>24 Saatlik Zaman Planlayıcı (v4)</title>
+    <title>24 Saatlik Zaman Planlayıcı (v5)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -202,10 +202,10 @@
             const scaleFactor = 1.2;
             const centerX = 250 * scaleFactor;
             const centerY = 250 * scaleFactor;
-            const eventArcRadius = 276;
+            const eventArcRadius = 246;
             
             let events = [];
-            let currentDay = new Date().getDay();
+            let currentDay = -1; 
 
             function saveEventsToLocal() { localStorage.setItem('sectographEvents', JSON.stringify(events)); }
             function loadEventsFromLocal() {
@@ -391,7 +391,6 @@
                         eventArcsContainer.appendChild(path);
                     }
                 });
-
                 renderOverlaps(sortedEvents);
             }
 
@@ -399,21 +398,16 @@
                 const drawnPatterns = {};
                 for (let i = 0; i < sortedEvents.length; i++) {
                     for (let j = i + 1; j < sortedEvents.length; j++) {
-                        const event1 = sortedEvents[i];
-                        const event2 = sortedEvents[j];
                         const getIntervals = (e) => {
-                            const start = timeToMinutes(e.start);
-                            const end = timeToMinutes(e.end);
+                            const start = timeToMinutes(e.start); const end = timeToMinutes(e.end);
                             return (end < start) ? [[start, 1440], [0, end]] : [[start, end]];
                         };
-                        const intervals1 = getIntervals(event1);
-                        const intervals2 = getIntervals(event2);
-                        for (const int1 of intervals1) {
-                            for (const int2 of intervals2) {
+                        for (const int1 of getIntervals(sortedEvents[i])) {
+                            for (const int2 of getIntervals(sortedEvents[j])) {
                                 const overlapStart = Math.max(int1[0], int2[0]);
                                 const overlapEnd = Math.min(int1[1], int2[1]);
                                 if (overlapStart < overlapEnd) {
-                                    const overlapColor = event2.color;
+                                    const overlapColor = sortedEvents[j].color;
                                     const patternId = `pattern-${overlapColor.replace('#', '')}`;
                                     if (!drawnPatterns[patternId]) {
                                         const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
@@ -427,9 +421,7 @@
                                         document.getElementById('pattern-defs').appendChild(pattern);
                                         drawnPatterns[patternId] = true;
                                     }
-                                    const overlapStartAngle = (overlapStart / 1440) * 360 - 90;
-                                    const overlapEndAngle = (overlapEnd / 1440) * 360 - 90;
-                                    const arc = createArc(centerX, centerY, eventArcRadius, overlapStartAngle, overlapEndAngle);
+                                    const arc = createArc(centerX, centerY, eventArcRadius, (overlapStart / 1440) * 360 - 90, (overlapEnd / 1440) * 360 - 90);
                                     const overlapPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
                                     overlapPath.setAttribute('d', arc);
                                     overlapPath.setAttribute('fill', `url(#${patternId})`);
@@ -488,74 +480,52 @@
 
             addForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const startTimeInput = document.getElementById('start-time');
-                const endTimeInput = document.getElementById('end-time');
+                const startTimeInput = document.getElementById('start-time'), endTimeInput = document.getElementById('end-time');
                 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-                handleTimeInput({ target: startTimeInput, type: 'blur' });
-                handleTimeInput({ target: endTimeInput, type: 'blur' });
+                handleTimeInput({ target: startTimeInput, type: 'blur' }); handleTimeInput({ target: endTimeInput, type: 'blur' });
 
                 if (timeRegex.test(startTimeInput.value) && timeRegex.test(endTimeInput.value)) {
                     const newEvent = {
                         id: Date.now(),
                         name: document.getElementById('event-name').value,
-                        start: startTimeInput.value,
-                        end: endTimeInput.value,
+                        start: startTimeInput.value, end: endTimeInput.value,
                         color: document.getElementById('event-color').value,
                         recurrence: getRecurrenceData('add')
                     };
                     events.push(newEvent);
-                    saveEventsToLocal();
-                    renderEventsList();
-                    animateArcUpdate();
-                    addForm.reset();
+                    saveEventsToLocal(); renderEventsList(); animateArcUpdate(); addForm.reset();
                     document.getElementById('event-color').value = '#3b82f6';
                     document.getElementById('recurrence-weekday').checked = true;
                     addCustomDaySelector.classList.add('hidden');
-                } else {
-                    alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.');
-                }
+                } else { alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.'); }
             });
 
             editForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const eventId = parseInt(document.getElementById('edit-event-id').value);
                 const eventIndex = events.findIndex(event => event.id === eventId);
-                const startTimeInput = document.getElementById('edit-start-time');
-                const endTimeInput = document.getElementById('edit-end-time');
+                const startTimeInput = document.getElementById('edit-start-time'), endTimeInput = document.getElementById('edit-end-time');
                 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-                handleTimeInput({ target: startTimeInput, type: 'blur' });
-                handleTimeInput({ target: endTimeInput, type: 'blur' });
+                handleTimeInput({ target: startTimeInput, type: 'blur' }); handleTimeInput({ target: endTimeInput, type: 'blur' });
 
                 if (eventIndex > -1 && timeRegex.test(startTimeInput.value) && timeRegex.test(endTimeInput.value)) {
                     events[eventIndex] = {
-                        id: eventId,
-                        name: document.getElementById('edit-event-name').value,
-                        start: startTimeInput.value,
-                        end: endTimeInput.value,
+                        id: eventId, name: document.getElementById('edit-event-name').value,
+                        start: startTimeInput.value, end: endTimeInput.value,
                         color: document.getElementById('edit-event-color').value,
                         recurrence: getRecurrenceData('edit')
                     };
-                    saveEventsToLocal();
-                    renderEventsList();
-                    animateArcUpdate();
-                    closeEditModal();
-                } else {
-                     alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.');
-                }
+                    saveEventsToLocal(); renderEventsList(); animateArcUpdate(); closeEditModal();
+                } else { alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.'); }
             });
 
             eventList.addEventListener('click', (e) => {
-                const button = e.target.closest('button');
-                if (!button) return;
+                const button = e.target.closest('button'); if (!button) return;
                 const eventId = parseInt(button.dataset.id);
                 if (button.classList.contains('delete-btn')) {
                     events = events.filter(event => event.id !== eventId);
-                    saveEventsToLocal();
-                    renderEventsList();
-                    animateArcUpdate();
-                } else if (button.classList.contains('edit-btn')) {
-                    openEditModal(eventId);
-                }
+                    saveEventsToLocal(); renderEventsList(); animateArcUpdate();
+                } else if (button.classList.contains('edit-btn')) { openEditModal(eventId); }
             });
 
             cancelEditBtn.addEventListener('click', closeEditModal);
@@ -563,8 +533,7 @@
             
             ['start-time', 'end-time', 'edit-start-time', 'edit-end-time'].forEach(id => {
                 const input = document.getElementById(id);
-                input.addEventListener('input', handleTimeInput);
-                input.addEventListener('blur', handleTimeInput);
+                input.addEventListener('input', handleTimeInput); input.addEventListener('blur', handleTimeInput);
             });
 
             document.querySelectorAll('#add-event-form input[name="recurrence"]').forEach(radio => {
@@ -576,40 +545,28 @@
 
             function timeToMinutes(timeStr) {
                 if (!timeStr || !timeStr.includes(':')) return 0;
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                return hours * 60 + minutes;
+                const [h, m] = timeStr.split(':').map(Number); return h * 60 + m;
             }
-            function timeToAngle(timeStr) {
-                return (timeToMinutes(timeStr) / 1440) * 360 - 90;
-            }
-            function polarToCartesian(cx, cy, radius, angleInDegrees) {
-                const angleInRadians = angleInDegrees * Math.PI / 180.0;
-                return { x: cx + (radius * Math.cos(angleInRadians)), y: cy + (radius * Math.sin(angleInRadians)) };
-            }
-            function createArc(cx, cy, radius, startAngle, endAngle) {
-                if (endAngle < startAngle) endAngle += 360;
-                const start = polarToCartesian(cx, cy, radius, endAngle);
-                const end = polarToCartesian(cx, cy, radius, startAngle);
-                const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-                return ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y, "L", cx, cy, "Z"].join(" ");
+            function timeToAngle(timeStr) { return (timeToMinutes(timeStr) / 1440) * 360 - 90; }
+            function polarToCartesian(cx, cy, r, angle) { const rad = angle * Math.PI / 180.0; return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) }; }
+            function createArc(cx, cy, r, start, end) {
+                if (end < start) end += 360;
+                const s = polarToCartesian(cx, cy, r, end); const e = polarToCartesian(cx, cy, r, start);
+                const flag = end - start <= 180 ? "0" : "1";
+                return ["M", s.x, s.y, "A", r, r, 0, flag, 0, e.x, e.y, "L", cx, cy, "Z"].join(" ");
             }
 
             function updateClock() {
                 const now = new Date();
                 const newDay = now.getDay();
-
-                if (newDay !== currentDay) {
+                if (newDay !== currentDay && currentDay !== -1) {
                     const oldArcs = eventArcsContainer.querySelectorAll('path');
                     oldArcs.forEach(arc => arc.classList.add('arc-fade-out'));
-                    setTimeout(() => {
-                        renderClockArcs(newDay, true);
-                    }, 500);
-                    currentDay = newDay;
+                    setTimeout(() => { renderClockArcs(newDay, true); }, 500);
                 }
+                currentDay = newDay;
 
-                const h = now.getHours();
-                const m = now.getMinutes();
-                const s = now.getSeconds();
+                const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
                 const hourAngle = (h * 60 + m) / (24 * 60) * 360 - 90;
                 const minuteAngle = (m / 60 + s / 3600) * 360 - 90;
                 hourHand.setAttribute('transform', `rotate(${hourAngle}, ${centerX}, ${centerY})`);
@@ -626,7 +583,7 @@
             events = loadEventsFromLocal();
             drawClockFace();
             renderEventsList();
-            renderClockArcs(currentDay);
+            renderClockArcs(new Date().getDay());
             updateClock();
             setInterval(updateClock, 1000);
         });
