@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sectograph-cache-v5'; // Önbellek sorunlarını çözmek için versiyon yükseltildi
+const CACHE_NAME = 'sectograph-cache-v6'; // Önbelleği sıfırlamak için versiyon yükseltildi
 const urlsToCache = [
   './',
   './index.html',
@@ -7,16 +7,16 @@ const urlsToCache = [
   'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap'
 ];
 
-// Yükleme: Önbelleği aç ve dosyaları ekle
+// Yükleme: Yeni dosyaları önbelleğe al
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Eski service worker'ın beklemesini engelle
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Önbellek açıldı');
+        console.log('Önbellek açıldı ve dosyalar ekleniyor.');
         return cache.addAll(urlsToCache);
       })
   );
-  self.skipWaiting();
 });
 
 // Aktivasyon: Eski önbellekleri temizle
@@ -31,24 +31,22 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim()) // Kontrolü hemen al
   );
-  return self.clients.claim();
 });
 
-// Fetch: Önbellekten yanıt ver veya ağdan al
+// Fetch: Önce önbellekten, bulamazsa ağdan yanıt ver
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Önbellekte varsa, oradan yanıt ver
-        if (response) {
-          return response;
-        }
-        // Önbellekte yoksa, ağdan getirmeyi dene
-        return fetch(event.request);
-      }
-    )
-  );
+    event.respondWith(
+        caches.match(event.request)
+            .then(response => {
+                // Önbellekte varsa, oradan döndür
+                if (response) {
+                    return response;
+                }
+                // Önbellekte yoksa, ağdan al
+                return fetch(event.request);
+            })
+    );
 });
 
