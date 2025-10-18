@@ -8,7 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- PWA için Manifest Dosyası --><link rel="manifest" href="manifest.json">
+    <!-- PWA için Manifest Dosyası -->
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#111827"/>
     <style>
         body { font-family: 'Roboto', sans-serif; background-color: #111827; color: #f3f4f6; }
@@ -54,30 +55,7 @@
             font-weight: 500;
         }
         
-        /* Tam Yuvarlak Renk Seçici */
-        input[type="color"] {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 2.5rem; /* 40px */
-            height: 2.5rem; /* 40px */
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-        }
-        input[type="color"]::-webkit-color-swatch {
-            border-radius: 50%;
-            border: 2px solid #4b5563;
-            padding: 0;
-        }
-        input[type="color"]::-moz-color-swatch {
-            border-radius: 50%;
-            border: 2px solid #4b5563;
-            padding: 0;
-        }
-
-        /* Gün geçişi ve güncelleme animasyonları */
+        /* Animasyonlar */
         @keyframes fade-out { from { opacity: 0.7; } to { opacity: 0; } }
         @keyframes fade-in { from { opacity: 0; } to { opacity: 0.7; } }
         .arc-fade-out { animation: fade-out 0.5s ease-in-out forwards; }
@@ -86,31 +64,34 @@
 </head>
 <body class="w-full min-h-screen bg-gray-900 p-4 md:p-8">
     <main class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full md:h-[calc(100vh-4rem)]">
-        <!-- Sol Sütun: Saat --><div class="flex flex-col items-center justify-center w-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 md:h-full">
+        <!-- Sol Sütun: Saat -->
+        <div class="flex flex-col items-center justify-center w-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 md:h-full">
             <h1 class="clock-title text-xl md:text-2xl text-center mb-2 text-gray-300">24-Saatlik Zaman Döngüsü</h1>
             <svg id="sectograph-clock" class="w-full h-full max-w-xl aspect-square" viewBox="0 0 600 600">
                 <defs id="pattern-defs"></defs>
-                <!-- Dış çerçeve ve ana arka plan --><circle cx="300" cy="300" r="288" fill="none" stroke="#374151" stroke-width="4"/>
+                <!-- Dış çerçeve ve ana arka plan -->
+                <circle cx="300" cy="300" r="288" fill="none" stroke="#374151" stroke-width="4"/>
                 <circle cx="300" cy="300" r="276" fill="#1f2937" />
-                
-                <!-- Olay Yayları (En altta) --><g id="event-arcs"></g> 
-                
-                <!-- İç kadran çizgileri --><circle cx="300" cy="300" r="216" fill="none" stroke="#4b5563" stroke-width="1" stroke-dasharray="4 4"/>
+                <!-- Olay Yayları (En altta) -->
+                <g id="event-arcs"></g> 
+                <!-- İç kadran çizgileri -->
+                <circle cx="300" cy="300" r="216" fill="none" stroke="#4b5563" stroke-width="1" stroke-dasharray="4 4"/>
                 <circle cx="300" cy="300" r="120" fill="none" stroke="#4b5563" stroke-width="1" />
-                
-                <!-- Tick işaretleri ve sayılar (Yayların üzerinde) --><g id="ticks"></g>
+                <!-- Tick işaretleri ve sayılar (Yayların üzerinde) -->
+                <g id="ticks"></g>
                 <g id="numbers"></g>
-                
-                <!-- Saat ve dakika çubukları --><g>
-                    <!-- Uzun çubuk Akrep (saat) --><line id="hour-hand" x1="300" y1="300" x2="300" y2="96" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
-                    <!-- Kısa çubuk Yelkovan (dakika) --><line id="minute-hand" x1="300" y1="300" x2="300" y2="180" stroke="#93c5fd" stroke-width="6" stroke-linecap="round"/>
+                <!-- Saat ve dakika çubukları -->
+                <g>
+                    <line id="hour-hand" x1="300" y1="300" x2="300" y2="96" stroke="#60a5fa" stroke-width="6" stroke-linecap="round"/>
+                    <line id="minute-hand" x1="300" y1="300" x2="300" y2="180" stroke="#93c5fd" stroke-width="6" stroke-linecap="round"/>
                 </g>
                 <circle cx="300" cy="300" r="8" fill="#60a5fa"/>
                 <circle cx="300" cy="300" r="4" fill="#1f2937"/>
             </svg>
             <p id="digital-clock" class="w-full text-center text-3xl md:text-4xl text-blue-200 font-medium mt-4 tracking-wider"></p>
         </div>
-        <!-- Sağ Sütun: Görev Yöneticisi --><div class="flex flex-col w-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 md:h-full md:overflow-hidden">
+        <!-- Sağ Sütun: Görev Yöneticisi -->
+        <div class="flex flex-col w-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 md:h-full md:overflow-hidden">
             <h2 class="clock-title text-xl md:text-2xl text-center mb-4 text-gray-300 flex-shrink-0">Etkinlik Yöneticisi</h2>
             <form id="add-event-form" class="grid grid-cols-2 gap-x-4 gap-y-5 mb-4 flex-shrink-0">
                 <div class="col-span-2"><label for="event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label><input type="text" id="event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
@@ -119,8 +100,9 @@
                 
                 <div class="col-span-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <label for="event-color" class="block text-sm font-medium text-gray-400">Renk</label>
-                        <input type="color" id="event-color" value="#3b82f6">
+                        <label class="block text-sm font-medium text-gray-400">Renk</label>
+                        <div id="add-color-swatch" class="w-10 h-10 rounded-full cursor-pointer border-2 border-gray-600" style="background-color: #3b82f6;"></div>
+                        <input type="hidden" id="event-color" value="#3b82f6">
                     </div>
                     <fieldset class="flex items-center flex-wrap gap-2 text-sm">
                         <legend class="sr-only">Tekrarlama Seçeneği</legend>
@@ -147,7 +129,8 @@
             <div class="flex-grow overflow-y-auto custom-scrollbar pr-2 min-h-0"><h3 class="text-xl font-medium text-gray-300 mb-4 flex-shrink-0">Etkinlik Listesi</h3><ul id="event-list" class="space-y-3"></ul></div>
         </div>
     </main>
-    <!-- Düzenleme Modalı --><div id="edit-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50">
+    <!-- Düzenleme Modalı -->
+    <div id="edit-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50">
         <div class="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md border border-gray-700">
             <h2 class="text-xl font-bold text-white mb-5">Etkinliği Düzenle</h2>
             <form id="edit-event-form">
@@ -159,8 +142,9 @@
                 </div>
                 <div class="mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <label for="edit-event-color" class="block text-sm font-medium text-gray-400">Renk</label>
-                        <input type="color" id="edit-event-color">
+                        <label class="block text-sm font-medium text-gray-400">Renk</label>
+                        <div id="edit-color-swatch" class="w-10 h-10 rounded-full cursor-pointer border-2 border-gray-600"></div>
+                        <input type="hidden" id="edit-event-color">
                     </div>
                      <fieldset class="flex items-center flex-wrap gap-2 text-sm">
                         <legend class="sr-only">Tekrarlama Seçeneği</legend>
@@ -184,7 +168,8 @@
             </form>
         </div>
     </div>
-    <!-- Manuel Saat Kurulum Modalı --><div id="manual-time-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+    <!-- Manuel Saat Kurulum Modalı -->
+    <div id="manual-time-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
         <div class="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-sm border border-gray-700">
             <h2 class="text-2xl font-bold text-white mb-6 text-center">Saati Manuel Kur</h2>
             <p class="text-gray-400 text-center mb-6">Lütfen başlangıç saatini girin (SSDD). Uygulama bu saatten itibaren saymaya devam edecektir.</p>
@@ -196,6 +181,21 @@
                 </div>
                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Saati Başlat</button>
             </form>
+        </div>
+    </div>
+    <!-- Renk Seçici Modalı -->
+    <div id="color-picker-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-xs border border-gray-700">
+            <h2 class="text-xl font-bold text-white mb-4 text-center">Renk Seç</h2>
+            <div id="color-wheel-container" class="relative w-full aspect-square mb-4 cursor-pointer">
+                <canvas id="color-wheel-canvas"></canvas>
+                <div id="color-preview" class="absolute w-24 h-24 rounded-full border-4 border-gray-700 pointer-events-none" style="top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+                <div id="color-picker-indicator" class="absolute w-6 h-6 rounded-full border-2 border-white shadow-lg pointer-events-none bg-transparent" style="transform: translate(-50%, -50%);"></div>
+            </div>
+            <div class="flex justify-end gap-4">
+                <button type="button" id="color-picker-cancel" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">İptal</button>
+                <button type="button" id="color-picker-ok" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Tamam</button>
+            </div>
         </div>
     </div>
     <script>
@@ -214,125 +214,106 @@
             const manualTimeModal = document.getElementById('manual-time-modal');
             const manualTimeForm = document.getElementById('manual-time-form');
             const digitalClock = document.getElementById('digital-clock');
+            const colorPickerModal = document.getElementById('color-picker-modal');
+            const colorWheelContainer = document.getElementById('color-wheel-container');
+            const colorWheelCanvas = document.getElementById('color-wheel-canvas');
+            const colorPreview = document.getElementById('color-preview');
+            const colorPickerOk = document.getElementById('color-picker-ok');
+            const colorPickerCancel = document.getElementById('color-picker-cancel');
+            const colorPickerIndicator = document.getElementById('color-picker-indicator');
 
             const scaleFactor = 1.2;
             const centerX = 250 * scaleFactor;
             const centerY = 250 * scaleFactor;
-            const eventArcRadius = 246; // Yayların dış yarıçapı
-
-            // Event ve opaklık değerleri
-            const ARC_OPACITY = 0.7; // Etkinlik yayları ve kesişim alanları için yeni opaklık
+            const eventArcRadius = 246;
             
             let events = [];
-            let currentDay = -1; // Haftanın mevcut günü (0=Pazar, 1=Pazartesi, vb.)
-            let totalSecondsFromMidnight = 0; // Gece yarısından bu yana geçen toplam saniye
-            let clockIntervalId = null; // Saat güncelleme interval ID'si
+            let currentDay = -1; 
+            let totalSecondsFromMidnight = 0;
+            let clockIntervalId = null;
+            let activeColorInput = null;
+            let activeColorSwatch = null;
+            let pickerState = { h: 210 };
 
-            // Local Storage Fonksiyonları
+            // --- Veri Saklama Fonksiyonları (LocalStorage) ---
             function saveEventsToLocal() { localStorage.setItem('sectographEvents', JSON.stringify(events)); }
             function loadEventsFromLocal() {
                 const savedEvents = localStorage.getItem('sectographEvents');
-                if (savedEvents) {
-                    try {
-                        const parsed = JSON.parse(savedEvents);
-                        return Array.isArray(parsed) ? parsed : [];
-                    } catch (e) {
-                        console.error("Etkinlikler yüklenirken hata oluştu:", e);
-                        return [];
-                    }
-                }
+                if (savedEvents) { try { const parsed = JSON.parse(savedEvents); return Array.isArray(parsed) ? parsed : []; } catch (e) { return []; } }
                 return [];
             }
 
-            // Saat Kadranını Çizme
+            // --- Saat Arayüzü Çizim Fonksiyonları ---
             function drawClockFace() {
                 const ticks = document.getElementById('ticks');
                 const numbers = document.getElementById('numbers');
-                ticks.innerHTML = '';
-                numbers.innerHTML = '';
+                ticks.innerHTML = ''; numbers.innerHTML = '';
                 
-                const radius = 195 * scaleFactor; // Sayıların yerleştirileceği yarıçap
-                const tickOuterRadius = 230 * scaleFactor; // Tiklerin dış bitiş yarıçapı
-                const tickInnerRadiusMajor = 215 * scaleFactor; // Büyük tiklerin iç başlangıç yarıçapı
-                const tickInnerRadiusMinor = 220 * scaleFactor; // Küçük saat tiklerinin iç başlangıç yarıçapı
-                const tickInnerRadiusSmall = 225 * scaleFactor; // 10 dakikalık tiklerin iç başlangıç yarıçapı
+                const radius = 195 * scaleFactor;
+                const tickOuterRadius = 230 * scaleFactor;
+                const tickInnerRadiusMajor = 215 * scaleFactor;
+                const tickInnerRadiusMinor = 220 * scaleFactor;
+                const tickInnerRadiusSmall = 225 * scaleFactor;
 
-                // Dış 24 saatlik kadranın tikleri
-                for (let i = 0; i < (24 * 6); i++) { // Her 10 dakikada bir tik (24 saat * 60 dakika / 10 dakika)
+                for (let i = 0; i < (24 * 6); i++) {
                     const totalMinutes = i * 10;
-                    const angle = (totalMinutes / (24 * 60)) * 360 - 90; // -90 offset ile 00:00 yukarıya gelir
+                    const angle = (totalMinutes / (24 * 60)) * 360 - 90;
                     const angleRad = angle * (Math.PI / 180);
-
                     const isHourTick = (totalMinutes % 60) === 0;
-                    const isMajorHourTick = isHourTick && ((totalMinutes / 60) % 6 === 0); // 00, 06, 12, 18 gibi ana saatler
-
+                    const isMajorHourTick = isHourTick && ((totalMinutes / 60) % 6 === 0);
                     let tickStartRadius, tickWidth, tickColor;
                     if (isHourTick) {
                         tickStartRadius = isMajorHourTick ? tickInnerRadiusMajor : tickInnerRadiusMinor;
                         tickWidth = isMajorHourTick ? '3' : '2';
-                        tickColor = isMajorHourTick ? '#60a5fa' : '#4b5563'; // Mavi ana tikler, gri diğer saat tikleri
+                        tickColor = isMajorHourTick ? '#60a5fa' : '#4b5563';
                     } else {
                         tickStartRadius = tickInnerRadiusSmall;
                         tickWidth = '1';
-                        tickColor = '#4b5563'; // Gri 10 dakikalık tikler
+                        tickColor = '#4b5563';
                     }
-
                     const x1 = centerX + tickStartRadius * Math.cos(angleRad);
                     const y1 = centerY + tickStartRadius * Math.sin(angleRad);
                     const x2 = centerX + tickOuterRadius * Math.cos(angleRad);
                     const y2 = centerY + tickOuterRadius * Math.sin(angleRad);
-
                     const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    tick.setAttribute('x1', x1);
-                    tick.setAttribute('y1', y1);
-                    tick.setAttribute('x2', x2);
-                    tick.setAttribute('y2', y2);
-                    tick.setAttribute('stroke', tickColor);
-                    tick.setAttribute('stroke-width', tickWidth);
+                    tick.setAttribute('x1', x1); tick.setAttribute('y1', y1); tick.setAttribute('x2', x2); tick.setAttribute('y2', y2);
+                    tick.setAttribute('stroke', tickColor); tick.setAttribute('stroke-width', tickWidth);
                     ticks.appendChild(tick);
                 }
 
-                // Dış 24 saatlik kadranın sayıları
                 for (let h = 0; h < 24; h++) {
                     const angle = (h / 24) * 360 - 90;
                     const angleRad = angle * (Math.PI / 180);
-                    const isMajorTick = h % 6 === 0; // 0, 6, 12, 18 sayıları daha büyük ve parlak
-
+                    const isMajorTick = h % 6 === 0;
                     const numX = centerX + radius * Math.cos(angleRad);
                     const numY = centerY + radius * Math.sin(angleRad);
-
                     const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                    numberText.setAttribute('x', numX);
-                    numberText.setAttribute('y', numY);
-                    numberText.setAttribute('fill', isMajorTick ? '#93c5fd' : '#e5e7eb'); // Ana saatlere daha parlak mavi
+                    numberText.setAttribute('x', numX); numberText.setAttribute('y', numY);
+                    numberText.setAttribute('fill', isMajorTick ? '#93c5fd' : '#e5e7eb');
                     numberText.setAttribute('font-weight', isMajorTick ? '500' : '400');
                     numberText.setAttribute('text-anchor', 'middle');
                     numberText.setAttribute('dominant-baseline', 'central');
                     if (h === 0) {
-                        numberText.setAttribute('font-size', `${20 * scaleFactor}`); // 00:00 biraz daha büyük
+                        numberText.setAttribute('font-size', `${20 * 1.2}`);
                         numberText.textContent = '00';
                     } else {
-                        numberText.setAttribute('font-size', isMajorTick ? `${22 * scaleFactor}` : `${16 * scaleFactor}`);
+                        numberText.setAttribute('font-size', isMajorTick ? `${22 * 1.2}` : `${16 * 1.2}`);
                         numberText.textContent = h.toString().padStart(2, '0');
                     }
                     numbers.appendChild(numberText);
                 }
 
-                // İç 60 dakikalık kadranın sayıları
-                const minuteRadius = 130 * scaleFactor; // Dakika sayılarının yerleştirileceği yarıçap
-                for (let i = 1; i <= 12; i++) { // Her 5 dakikada bir sayı (5, 10, ..., 55, 00)
+                const minuteRadius = 130 * scaleFactor;
+                for (let i = 1; i <= 12; i++) {
                     const minute = i * 5;
                     const angle = (minute / 60) * 360 - 90;
                     const angleRad = angle * (Math.PI / 180);
-
                     const numX = centerX + minuteRadius * Math.cos(angleRad);
                     const numY = centerY + minuteRadius * Math.sin(angleRad);
-
                     const minuteText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                    minuteText.setAttribute('x', numX);
-                    minuteText.setAttribute('y', numY);
-                    minuteText.setAttribute('fill', '#d1d5db'); // Açık gri
-                    minuteText.setAttribute('font-size', `${15 * scaleFactor}`);
+                    minuteText.setAttribute('x', numX); minuteText.setAttribute('y', numY);
+                    minuteText.setAttribute('fill', '#d1d5db');
+                    minuteText.setAttribute('font-size', `${15 * 1.2}`);
                     minuteText.setAttribute('font-weight', '500');
                     minuteText.setAttribute('text-anchor', 'middle');
                     minuteText.setAttribute('dominant-baseline', 'central');
@@ -341,70 +322,52 @@
                 }
             }
             
-            // Zaman formatı girişi için maskeleme ve doğrulama
             function handleTimeInput(event) {
                 const input = event.target;
-                const type = event.type; // 'input' veya 'blur'
+                const type = event.type;
                 if (type === 'input') {
                     let value = input.value;
-                    let digits = value.replace(/\D/g, ''); // Sadece rakamları al
+                    let digits = value.replace(/\D/g, '');
                     if (digits.length > 2) {
-                        // İlk iki rakam saat, sonra ':' ve kalan iki rakam dakika
                         input.value = `${digits.substring(0, 2)}:${digits.substring(2, 4)}`;
-                    } else {
-                        input.value = digits;
-                    }
+                    } else { input.value = digits; }
                 } else if (type === 'blur') {
-                    // Odak kaybında (blur) zamanı doğrula
-                    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/; // SS:DD formatı (00:00 - 23:59)
+                    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
                     input.classList.toggle('invalid-time', input.value.length > 0 && !timeRegex.test(input.value));
                 }
             }
 
-            // Tekrarlama türüne göre günleri HTML olarak döndürür
             function getRecurrenceDaysHtml(recurrence) {
                 if (!recurrence) return '';
                 const dayNames = { '1': 'Pzt', '2': 'Sal', '3': 'Çar', '4': 'Per', '5': 'Cum', '6': 'Cmt', '0': 'Paz' };
                 let textToShow = '';
                 switch (recurrence.type) {
-                    case 'weekday':
-                        textToShow = "Hafta içi";
-                        break;
-                    case 'weekend':
-                        textToShow = "Hafta sonu";
-                        break;
+                    case 'weekday': textToShow = "Hafta içi"; break;
+                    case 'weekend': textToShow = "Hafta sonu"; break;
                     case 'custom':
                         if (!recurrence.days || recurrence.days.length === 0) return '';
-                        // Günleri haftanın başlangıcından itibaren sırala (Pazartesi=1, Pazar=0=7)
                         const sortedDays = recurrence.days.sort((a, b) => (a === '0' ? 7 : parseInt(a)) - (b === '0' ? 7 : parseInt(b)));
                         textToShow = sortedDays.map(d => dayNames[d]).join(', ');
                         break;
-                    default:
-                        return '';
+                    default: return '';
                 }
                 return textToShow ? `<div class="text-xs text-gray-400 text-right max-w-[80px]">${textToShow}</div>` : '';
             }
 
-            // Bir etkinliğin belirli bir günde olup olmadığını kontrol eder
             function isEventOnDay(event, dayOfWeek) {
                 const recurrence = event.recurrence;
-                if (!recurrence) return true; // Tekrarlama belirtilmemişse her gün
+                if (!recurrence) return true;
                 switch (recurrence.type) {
-                    case 'weekday': return dayOfWeek >= 1 && dayOfWeek <= 5; // Pazartesi-Cuma
-                    case 'weekend': return dayOfWeek === 0 || dayOfWeek === 6; // Cumartesi-Pazar
+                    case 'weekday': return dayOfWeek >= 1 && dayOfWeek <= 5;
+                    case 'weekend': return dayOfWeek === 0 || dayOfWeek === 6;
                     case 'custom': return recurrence.days && recurrence.days.includes(String(dayOfWeek));
                     default: return true;
                 }
             }
 
-            // Etkinlik listesini render eder (sağdaki panel)
             function renderEventsList() {
-                eventList.innerHTML = ''; // Mevcut listeyi temizle
-                if (events.length === 0) {
-                    eventList.innerHTML = `<p class="text-gray-500 text-center">Henüz etkinlik eklenmedi.</p>`;
-                    return;
-                }
-                // Başlangıç saatine göre sırala
+                eventList.innerHTML = '';
+                if (events.length === 0) { eventList.innerHTML = `<p class="text-gray-500 text-center">Henüz etkinlik eklenmedi.</p>`; return; }
                 [...events].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start)).forEach(event => {
                     const li = document.createElement('li');
                     li.className = 'bg-gray-700 p-3 rounded-lg flex items-center justify-between';
@@ -418,22 +381,17 @@
                         </div>
                         <div class="flex items-center flex-shrink-0 gap-3">
                             ${getRecurrenceDaysHtml(event.recurrence)}
-                            <button data-id="${event.id}" class="edit-btn text-gray-400 hover:text-white p-2" aria-label="Etkinliği Düzenle">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="pointer-events: none;">
-                                    <path fill-rule="evenodd" d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <button data-id="${event.id}" class="delete-btn text-gray-500 hover:text-red-400 text-2xl leading-none px-2" aria-label="Etkinliği Sil">&times;</button>
+                            <button data-id="${event.id}" class="edit-btn text-gray-400 hover:text-white p-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="pointer-events: none;"><path fill-rule="evenodd" d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" clip-rule="evenodd" /></svg></button>
+                            <button data-id="${event.id}" class="delete-btn text-gray-500 hover:text-red-400 text-2xl leading-none px-2">&times;</button>
                         </div>`;
                     eventList.appendChild(li);
                 });
             }
             
-            // Saat kadranındaki etkinlik yaylarını render eder
             function renderClockArcs(dayOfWeek, isAnimating = false) {
-                eventArcsContainer.innerHTML = ''; // Mevcut yayları temizle
+                eventArcsContainer.innerHTML = '';
                 const patternDefs = document.getElementById('pattern-defs');
-                if (patternDefs) patternDefs.innerHTML = ''; // Mevcut desenleri temizle
+                if (patternDefs) patternDefs.innerHTML = '';
 
                 const eventsForToday = events.filter(event => isEventOnDay(event, dayOfWeek));
                 if (eventsForToday.length === 0) return;
@@ -443,33 +401,22 @@
                 sortedEvents.forEach(event => {
                     const startAngle = timeToAngle(event.start);
                     const endAngle = timeToAngle(event.end);
-
-                    // Gece yarısını geçen etkinlikler için (örn: 22:00 - 02:00) iki yay çizilir
                     if (timeToMinutes(event.end) < timeToMinutes(event.start)) {
-                        // İlk kısım (başlangıçtan gece yarısına kadar)
-                        const arc1 = createArc(centerX, centerY, eventArcRadius, startAngle, 270); // 270 derece, 24:00 (veya 00:00) noktası
+                        const arc1 = createArc(centerX, centerY, eventArcRadius, startAngle, 270);
                         const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        path1.setAttribute('d', arc1);
-                        path1.setAttribute('fill', event.color);
-                        path1.setAttribute('fill-opacity', ARC_OPACITY); // Opaklık ayarı
+                        path1.setAttribute('d', arc1); path1.setAttribute('fill', event.color); path1.setAttribute('fill-opacity', '0.7');
                         if(isAnimating) path1.classList.add('arc-fade-in');
                         eventArcsContainer.appendChild(path1);
                         
-                        // İkinci kısım (gece yarısından bitişe kadar)
-                        const arc2 = createArc(centerX, centerY, eventArcRadius, -90, endAngle); // -90 derece de 00:00 noktası
+                        const arc2 = createArc(centerX, centerY, eventArcRadius, -90, endAngle);
                         const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        path2.setAttribute('d', arc2);
-                        path2.setAttribute('fill', event.color);
-                        path2.setAttribute('fill-opacity', ARC_OPACITY); // Opaklık ayarı
+                        path2.setAttribute('d', arc2); path2.setAttribute('fill', event.color); path2.setAttribute('fill-opacity', '0.7');
                         if(isAnimating) path2.classList.add('arc-fade-in');
                         eventArcsContainer.appendChild(path2);
                     } else {
-                        // Normal etkinlikler için tek yay
                         const arc = createArc(centerX, centerY, eventArcRadius, startAngle, endAngle);
                         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        path.setAttribute('d', arc);
-                        path.setAttribute('fill', event.color);
-                        path.setAttribute('fill-opacity', ARC_OPACITY); // Opaklık ayarı
+                        path.setAttribute('d', arc); path.setAttribute('fill', event.color); path.setAttribute('fill-opacity', '0.7');
                         if(isAnimating) path.classList.add('arc-fade-in');
                         eventArcsContainer.appendChild(path);
                     }
@@ -477,53 +424,38 @@
                 renderOverlaps(sortedEvents);
             }
 
-            // Kesişim alanlarını taralı olarak render eder
             function renderOverlaps(sortedEvents) {
-                const drawnPatterns = {}; // Hangi desenlerin zaten çizildiğini takip etmek için
+                const drawnPatterns = {};
                 for (let i = 0; i < sortedEvents.length; i++) {
                     for (let j = i + 1; j < sortedEvents.length; j++) {
                         const getIntervals = (e) => {
-                            const start = timeToMinutes(e.start);
-                            const end = timeToMinutes(e.end);
-                            return (end < start) ? [[start, 1440], [0, end]] : [[start, end]]; // Gece yarısını geçen etkinlikler için iki aralık
+                            const start = timeToMinutes(e.start); const end = timeToMinutes(e.end);
+                            return (end < start) ? [[start, 1440], [0, end]] : [[start, end]];
                         };
-
                         for (const int1 of getIntervals(sortedEvents[i])) {
                             for (const int2 of getIntervals(sortedEvents[j])) {
                                 const overlapStart = Math.max(int1[0], int2[0]);
                                 const overlapEnd = Math.min(int1[1], int2[1]);
-
-                                if (overlapStart < overlapEnd) { // Bir kesişim varsa
-                                    const overlapColor = sortedEvents[j].color; // İkinci etkinliğin rengini kullan
+                                if (overlapStart < overlapEnd) {
+                                    const overlapColor = sortedEvents[j].color;
                                     const patternId = `pattern-${overlapColor.replace('#', '')}`;
-
-                                    // Deseni sadece bir kez tanımla
                                     if (!drawnPatterns[patternId]) {
                                         const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
-                                        pattern.setAttribute('id', patternId);
-                                        pattern.setAttribute('patternUnits', 'userSpaceOnUse');
-                                        pattern.setAttribute('width', '8');
-                                        pattern.setAttribute('height', '8');
-                                        pattern.setAttribute('patternTransform', 'rotate(45)'); // Çapraz çizgiler için döndür
-                                        
+                                        pattern.setAttribute('id', patternId); pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+                                        pattern.setAttribute('width', '8'); pattern.setAttribute('height', '8');
+                                        pattern.setAttribute('patternTransform', 'rotate(45)');
                                         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                                        line.setAttribute('x1', '0');
-                                        line.setAttribute('y1', '0');
-                                        line.setAttribute('x2', '0');
-                                        line.setAttribute('y2', '8');
-                                        line.setAttribute('stroke', overlapColor);
-                                        line.setAttribute('stroke-width', '4');
+                                        line.setAttribute('x1', '0'); line.setAttribute('y1', '0'); line.setAttribute('x2', '0'); line.setAttribute('y2', '8');
+                                        line.setAttribute('stroke', overlapColor); line.setAttribute('stroke-width', '4');
                                         pattern.appendChild(line);
                                         document.getElementById('pattern-defs').appendChild(pattern);
                                         drawnPatterns[patternId] = true;
                                     }
-                                    
-                                    // Kesişim yayını çiz
                                     const arc = createArc(centerX, centerY, eventArcRadius, (overlapStart / 1440) * 360 - 90, (overlapEnd / 1440) * 360 - 90);
                                     const overlapPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
                                     overlapPath.setAttribute('d', arc);
                                     overlapPath.setAttribute('fill', `url(#${patternId})`);
-                                    overlapPath.setAttribute('fill-opacity', ARC_OPACITY); // Kesişim alanlarının opaklığını da ayarla
+                                    overlapPath.setAttribute('fill-opacity', '0.7');
                                     eventArcsContainer.appendChild(overlapPath);
                                 }
                             }
@@ -532,7 +464,6 @@
                 }
             }
             
-            // Düzenleme modalını açar ve etkinlik verilerini yükler
             function openEditModal(eventId) {
                 const eventToEdit = events.find(e => e.id === eventId);
                 if (eventToEdit) {
@@ -540,12 +471,15 @@
                     document.getElementById('edit-event-name').value = eventToEdit.name;
                     document.getElementById('edit-start-time').value = eventToEdit.start;
                     document.getElementById('edit-end-time').value = eventToEdit.end;
-                    document.getElementById('edit-event-color').value = eventToEdit.color;
+                    
+                    const editColorSwatch = document.getElementById('edit-color-swatch');
+                    const editColorInput = document.getElementById('edit-event-color');
+                    editColorInput.value = eventToEdit.color;
+                    editColorSwatch.style.backgroundColor = eventToEdit.color;
 
                     const recurrenceType = eventToEdit.recurrence ? eventToEdit.recurrence.type : 'weekday';
                     document.querySelector(`#edit-event-form input[name="edit-recurrence"][value="${recurrenceType}"]`).checked = true;
                     
-                    // Tüm özel gün onay kutularını temizle
                     const editCustomDays = document.querySelectorAll('#edit-event-form input[name="edit_custom_day"]');
                     editCustomDays.forEach(cb => cb.checked = false);
 
@@ -565,7 +499,6 @@
             }
             function closeEditModal() { editModalBackdrop.classList.add('hidden'); }
 
-            // Formdan tekrarlama verilerini alır
             function getRecurrenceData(formPrefix) {
                 const type = document.querySelector(`#${formPrefix}-event-form input[name="${formPrefix === 'add' ? 'recurrence' : 'edit-recurrence'}"]:checked`).value;
                 const recurrence = { type };
@@ -575,44 +508,35 @@
                 return recurrence;
             }
 
-            // Etkinlik yaylarını güncellerken animasyon uygular
             function animateArcUpdate() {
                 const oldArcs = eventArcsContainer.querySelectorAll('path');
-                oldArcs.forEach(arc => arc.classList.add('arc-fade-out')); // Eski yaylara fade-out animasyonu ekle
+                oldArcs.forEach(arc => arc.classList.add('arc-fade-out'));
                 setTimeout(() => {
-                    renderClockArcs(currentDay, true); // Yeni yayları fade-in animasyonu ile render et
-                }, 500); // Animasyon süresi kadar bekle
+                    renderClockArcs(currentDay, true); // true for isAnimating
+                }, 500);
             }
 
-            // --- Event Listeners ---
             addForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const startTimeInput = document.getElementById('start-time'), endTimeInput = document.getElementById('end-time');
                 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-                // Giriş alanlarını doğrula
-                handleTimeInput({ target: startTimeInput, type: 'blur' });
-                handleTimeInput({ target: endTimeInput, type: 'blur' });
+                handleTimeInput({ target: startTimeInput, type: 'blur' }); handleTimeInput({ target: endTimeInput, type: 'blur' });
 
                 if (timeRegex.test(startTimeInput.value) && timeRegex.test(endTimeInput.value)) {
                     const newEvent = {
-                        id: Date.now(), // Benzersiz ID
+                        id: Date.now(),
                         name: document.getElementById('event-name').value,
-                        start: startTimeInput.value,
-                        end: endTimeInput.value,
+                        start: startTimeInput.value, end: endTimeInput.value,
                         color: document.getElementById('event-color').value,
                         recurrence: getRecurrenceData('add')
                     };
                     events.push(newEvent);
-                    saveEventsToLocal();
-                    renderEventsList();
-                    animateArcUpdate();
-                    addForm.reset(); // Formu sıfırla
-                    document.getElementById('event-color').value = '#3b82f6'; // Renk seçiciyi varsayılana ayarla
-                    document.getElementById('recurrence-weekday').checked = true; // Tekrarlamayı varsayılana ayarla
-                    addCustomDaySelector.classList.add('hidden'); // Özel gün seçiciyi gizle
-                } else {
-                    alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.');
-                }
+                    saveEventsToLocal(); renderEventsList(); animateArcUpdate(); addForm.reset();
+                    document.getElementById('add-color-swatch').style.backgroundColor = '#3b82f6';
+                    document.getElementById('event-color').value = '#3b82f6';
+                    document.getElementById('recurrence-weekday').checked = true;
+                    addCustomDaySelector.classList.add('hidden');
+                } else { alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.'); }
             });
 
             editForm.addEventListener('submit', (e) => {
@@ -621,116 +545,74 @@
                 const eventIndex = events.findIndex(event => event.id === eventId);
                 const startTimeInput = document.getElementById('edit-start-time'), endTimeInput = document.getElementById('edit-end-time');
                 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-                // Giriş alanlarını doğrula
-                handleTimeInput({ target: startTimeInput, type: 'blur' });
-                handleTimeInput({ target: endTimeInput, type: 'blur' });
+                handleTimeInput({ target: startTimeInput, type: 'blur' }); handleTimeInput({ target: endTimeInput, type: 'blur' });
 
                 if (eventIndex > -1 && timeRegex.test(startTimeInput.value) && timeRegex.test(endTimeInput.value)) {
                     events[eventIndex] = {
-                        id: eventId,
-                        name: document.getElementById('edit-event-name').value,
-                        start: startTimeInput.value,
-                        end: endTimeInput.value,
+                        id: eventId, name: document.getElementById('edit-event-name').value,
+                        start: startTimeInput.value, end: endTimeInput.value,
                         color: document.getElementById('edit-event-color').value,
                         recurrence: getRecurrenceData('edit')
                     };
-                    saveEventsToLocal();
-                    renderEventsList();
-                    animateArcUpdate();
-                    closeEditModal();
-                } else {
-                    alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.');
-                }
+                    saveEventsToLocal(); renderEventsList(); animateArcUpdate(); closeEditModal();
+                } else { alert('Lütfen başlangıç ve bitiş saatlerini doğru formatta (SS:DD) giriniz.'); }
             });
 
             eventList.addEventListener('click', (e) => {
-                const button = e.target.closest('button');
-                if (!button) return; // Butona tıklanmadıysa çık
+                const button = e.target.closest('button'); if (!button) return;
                 const eventId = parseInt(button.dataset.id);
                 if (button.classList.contains('delete-btn')) {
                     events = events.filter(event => event.id !== eventId);
-                    saveEventsToLocal();
-                    renderEventsList();
-                    animateArcUpdate();
-                } else if (button.classList.contains('edit-btn')) {
-                    openEditModal(eventId);
-                }
+                    saveEventsToLocal(); renderEventsList(); animateArcUpdate();
+                } else if (button.classList.contains('edit-btn')) { openEditModal(eventId); }
             });
 
             cancelEditBtn.addEventListener('click', closeEditModal);
-            // Modal dışına tıklayınca modalı kapat
-            editModalBackdrop.addEventListener('click', e => {
-                if(e.target === editModalBackdrop) closeEditModal();
-            });
+            editModalBackdrop.addEventListener('click', e => { if(e.target === editModalBackdrop) closeEditModal(); });
             
-            // Zaman giriş alanlarına input ve blur event listener'ları ekle
             ['start-time', 'end-time', 'edit-start-time', 'edit-end-time'].forEach(id => {
                 const input = document.getElementById(id);
-                input.addEventListener('input', handleTimeInput);
-                input.addEventListener('blur', handleTimeInput);
+                input.addEventListener('input', handleTimeInput); input.addEventListener('blur', handleTimeInput);
             });
 
-            // Tekrarlama seçeneği değiştikçe özel gün seçiciyi göster/gizle (Ekle formu)
             document.querySelectorAll('#add-event-form input[name="recurrence"]').forEach(radio => {
-                radio.addEventListener('change', () => {
-                    addCustomDaySelector.classList.toggle('hidden', radio.value !== 'custom');
-                });
+                radio.addEventListener('change', () => addCustomDaySelector.classList.toggle('hidden', radio.value !== 'custom'));
             });
-            // Tekrarlama seçeneği değiştikçe özel gün seçiciyi göster/gizle (Düzenle formu)
             document.querySelectorAll('#edit-event-form input[name="edit-recurrence"]').forEach(radio => {
-                radio.addEventListener('change', () => {
-                    editCustomDaySelector.classList.toggle('hidden', radio.value !== 'custom');
-                });
+                radio.addEventListener('change', () => editCustomDaySelector.classList.toggle('hidden', radio.value !== 'custom'));
             });
 
-            // Zaman dizgisini dakikaya çevirir
             function timeToMinutes(timeStr) {
                 if (!timeStr || !timeStr.includes(':')) return 0;
-                const [h, m] = timeStr.split(':').map(Number);
-                return h * 60 + m;
+                const [h, m] = timeStr.split(':').map(Number); return h * 60 + m;
             }
-            // Zaman dizgisini SVG için açıya çevirir (-90 offset ile 00:00 yukarıda)
-            function timeToAngle(timeStr) {
-                return (timeToMinutes(timeStr) / 1440) * 360 - 90;
-            }
-            // Polar koordinatları Kartezyen koordinatlara çevirir
-            function polarToCartesian(cx, cy, r, angle) {
-                const rad = angle * Math.PI / 180.0;
-                return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) };
-            }
-            // SVG arc path dizesi oluşturur
+            function timeToAngle(timeStr) { return (timeToMinutes(timeStr) / 1440) * 360 - 90; }
+            function polarToCartesian(cx, cy, r, angle) { const rad = angle * Math.PI / 180.0; return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) }; }
             function createArc(cx, cy, r, start, end) {
-                if (end < start) end += 360; // Gece yarısını geçen yaylar için
-                const s = polarToCartesian(cx, cy, r, end);
-                const e = polarToCartesian(cx, cy, r, start);
-                const flag = end - start <= 180 ? "0" : "1"; // Büyük veya küçük yay bayrağı
+                if (end < start) end += 360;
+                const s = polarToCartesian(cx, cy, r, end); const e = polarToCartesian(cx, cy, r, start);
+                const flag = end - start <= 180 ? "0" : "1";
                 return ["M", s.x, s.y, "A", r, r, 0, flag, 0, e.x, e.y, "L", cx, cy, "Z"].join(" ");
             }
 
-            // Saati günceller ve kolları döndürür
             function updateClock() {
-                if (clockIntervalId === null) return; // Manuel kurulum yapılmamışsa güncelleme yapma
+                if (clockIntervalId === null) return; 
 
-                totalSecondsFromMidnight++; // Her saniye bir artır
+                totalSecondsFromMidnight++;
                 
-                const totalSecondsToday = totalSecondsFromMidnight % (24 * 3600); // 24 saatlik döngüdeki toplam saniye
+                const totalSecondsToday = totalSecondsFromMidnight % (24 * 3600);
                 const h = Math.floor(totalSecondsToday / 3600);
                 const m = Math.floor((totalSecondsToday % 3600) / 60);
-                const s = totalSecondsToday % 60; // Saniyeler anlık saat için kullanılmıyor ama hata ayıklama için faydalı olabilir
+                const s = totalSecondsToday % 60;
                 
-                // Gün geçişini kontrol et ve etkinlik yaylarını güncelle
                 const referenceDayData = JSON.parse(localStorage.getItem('sectographReferenceDay'));
                 if (referenceDayData) {
                     const daysPassed = Math.floor(totalSecondsFromMidnight / (24 * 3600));
-                    const newDay = (referenceDayData.day + daysPassed) % 7; // Haftanın günü (0-6)
-                    
-                    // Gün değiştiyse etkinlik yaylarını yeniden render et
+                    const newDay = (referenceDayData.day + daysPassed) % 7;
                     if (newDay !== currentDay && currentDay !== -1) {
                         const oldArcs = eventArcsContainer.querySelectorAll('path');
-                        oldArcs.forEach(arc => arc.classList.add('arc-fade-out')); // Eski yaylara fade-out
-                        setTimeout(() => {
-                            renderClockArcs(newDay, true); // Yeni yayları fade-in ile render et
-                        }, 500);
+                        oldArcs.forEach(arc => arc.classList.add('arc-fade-out'));
+                        setTimeout(() => { renderClockArcs(newDay, true); }, 500);
                     }
                     currentDay = newDay;
                 }
@@ -738,24 +620,20 @@
                 digitalClock.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
                 
                 // Düzeltilmiş Açı Hesaplamaları
-                // Akrep: 24 saatlik döngüde hareket eder. Her dakika 1/1440 tur (360/1440)
                 const hourAngle = ((h * 60 + m) / (24 * 60)) * 360; 
-                // Yelkovan: 60 dakikalık döngüde hareket eder. Her dakika 1/60 tur (360/60)
                 const minuteAngle = (m / 60) * 360;
 
                 hourHand.setAttribute('transform', `rotate(${hourAngle} ${centerX} ${centerY})`);
                 minuteHand.setAttribute('transform', `rotate(${minuteAngle} ${centerX} ${centerY})`);
             }
             
-            // Saati başlatır
             function startClockInterval(startSeconds) {
-                if(clockIntervalId) clearInterval(clockIntervalId); // Önceki interval'ı temizle
-                totalSecondsFromMidnight = startSeconds; // Başlangıç saniyesini ayarla
-                updateClock(); // İlk güncellemeyi hemen yap
-                clockIntervalId = setInterval(updateClock, 1000); // Her saniye güncelle
+                if(clockIntervalId) clearInterval(clockIntervalId);
+                totalSecondsFromMidnight = startSeconds;
+                updateClock();
+                clockIntervalId = setInterval(updateClock, 1000);
             }
 
-            // Manuel saat kurulum modalını yönetir
             function setupManualTime() {
                 const savedTimeData = localStorage.getItem('sectographManualTime');
                 if (savedTimeData) {
@@ -767,12 +645,12 @@
                         manualTimeModal.classList.add('hidden');
                         startClockInterval(currentTotalSeconds);
                     } catch(e) {
-                        console.error("Hatalı kaydedilmiş saat verisi. Yeniden kurulum yapılıyor.", e);
-                        localStorage.removeItem('sectographManualTime'); // Hatalı veriyi temizle
-                        manualTimeModal.classList.remove('hidden'); // Modalı göster
+                        console.error("Hatalı saat verisi.", e);
+                        localStorage.removeItem('sectographManualTime');
+                        manualTimeModal.classList.remove('hidden');
                     }
                 } else {
-                    manualTimeModal.classList.remove('hidden'); // Veri yoksa modalı göster
+                    manualTimeModal.classList.remove('hidden');
                 }
 
                 manualTimeForm.addEventListener('submit', (e) => {
@@ -789,11 +667,10 @@
                     
                     const timeToSave = { 
                         referenceTotalSeconds: referenceTotalSeconds,
-                        savedAt: Date.now() // Kaydedilme zamanı
+                        savedAt: Date.now() 
                     };
                     localStorage.setItem('sectographManualTime', JSON.stringify(timeToSave));
                     
-                    // Referans günü de kaydet (şu anki gün)
                     const now = new Date();
                     localStorage.setItem('sectographReferenceDay', JSON.stringify({ day: now.getDay() }));
 
@@ -803,11 +680,141 @@
                 });
             }
 
+             // --- Renk Seçici Mantığı ---
+            function drawColorWheel() {
+                const canvas = colorWheelCanvas;
+                const ctx = canvas.getContext('2d');
+                const size = colorWheelContainer.clientWidth;
+                if (size === 0) return;
+
+                canvas.width = size;
+                canvas.height = size;
+                const radius = size / 2;
+                const ringWidth = size * 0.2; // Kalınlık ayarı
+                ctx.clearRect(0, 0, size, size);
+
+                for (let i = 0; i < 360; i++) {
+                    const angle = (i - 90) * Math.PI / 180;
+                    ctx.beginPath();
+                    ctx.moveTo(radius, radius);
+                    ctx.arc(radius, radius, radius, angle, angle + Math.PI / 180 * 1.1); 
+                    ctx.closePath();
+                    ctx.fillStyle = `hsl(${i}, 100%, 50%)`;
+                    ctx.fill();
+                }
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(radius, radius, radius - ringWidth, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            function updateColorPicker() {
+                const color = `hsl(${pickerState.h}, 100%, 50%)`;
+                colorPreview.style.backgroundColor = color;
+                
+                const angle = (pickerState.h - 90) * Math.PI / 180;
+                const radius = colorWheelContainer.clientWidth / 2;
+                const ringWidth = colorWheelContainer.clientWidth * 0.2;
+                const indicatorRadius = radius - (ringWidth / 2);
+                
+                colorPickerIndicator.style.left = `${radius + indicatorRadius * Math.cos(angle)}px`;
+                colorPickerIndicator.style.top = `${radius + indicatorRadius * Math.sin(angle)}px`;
+            }
+
+            function openColorPicker(swatchEl) {
+                activeColorSwatch = swatchEl;
+                activeColorInput = swatchEl.nextElementSibling;
+                colorPickerModal.classList.remove('hidden');
+                
+                requestAnimationFrame(() => {
+                    drawColorWheel();
+                    const initialColor = activeColorInput.value;
+                    const hsl = hexToHsl(initialColor);
+                    pickerState.h = hsl.h;
+                    updateColorPicker();
+                });
+            }
+            function closeColorPicker() { colorPickerModal.classList.add('hidden'); }
+            
+            function handleColorWheelInteraction(event) {
+                event.preventDefault();
+                const rect = colorWheelContainer.getBoundingClientRect();
+                const x = (event.clientX || event.touches[0].clientX) - rect.left;
+                const y = (event.clientY || event.touches[0].clientY) - rect.top;
+                const radius = colorWheelContainer.clientWidth / 2;
+                const ringWidth = colorWheelContainer.clientWidth * 0.2;
+
+                const dx = x - radius;
+                const dy = y - radius;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance > radius - ringWidth && distance < radius) {
+                    let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    angle += 90; 
+                    if (angle < 0) angle += 360;
+                    pickerState.h = angle;
+                    updateColorPicker();
+                }
+            }
+
+            function hslToHex(h, s, l) {
+                l /= 100;
+                const a = s * Math.min(l, 1 - l) / 100;
+                const f = n => {
+                    const k = (n + h / 30) % 12;
+                    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                    return Math.round(255 * color).toString(16).padStart(2, '0');
+                };
+                return `#${f(0)}${f(8)}${f(4)}`;
+            }
+
+            function hexToHsl(H) {
+                let r = 0, g = 0, b = 0;
+                if (H.length == 4) { r = "0x" + H[1] + H[1]; g = "0x" + H[2] + H[2]; b = "0x" + H[3] + H[3]; }
+                else if (H.length == 7) { r = "0x" + H[1] + H[2]; g = "0x" + H[3] + H[4]; b = "0x" + H[5] + H[6]; }
+                r /= 255; g /= 255; b /= 255;
+                let cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax - cmin, h = 0, s = 0, l = 0;
+                if (delta == 0) h = 0;
+                else if (cmax == r) h = ((g - b) / delta) % 6;
+                else if (cmax == g) h = (b - r) / delta + 2;
+                else h = (r - g) / delta + 4;
+                h = Math.round(h * 60);
+                if (h < 0) h += 360;
+                l = (cmax + cmin) / 2;
+                s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+                s = +(s * 100).toFixed(1); l = +(l * 100).toFixed(1);
+                return { h, s, l };
+            }
+
+            document.getElementById('add-color-swatch').addEventListener('click', (e) => openColorPicker(e.target));
+            document.getElementById('edit-color-swatch').addEventListener('click', (e) => openColorPicker(e.target));
+
+            colorPickerOk.addEventListener('click', () => {
+                const hexColor = hslToHex(pickerState.h, 100, 50); 
+                if (activeColorInput && activeColorSwatch) {
+                    activeColorInput.value = hexColor;
+                    activeColorSwatch.style.backgroundColor = hexColor;
+                }
+                closeColorPicker();
+            });
+            colorPickerCancel.addEventListener('click', closeColorPicker);
+            
+            let isDragging = false;
+            colorWheelContainer.addEventListener('mousedown', (e) => { isDragging = true; handleColorWheelInteraction(e); });
+            colorWheelContainer.addEventListener('mousemove', (e) => { if (isDragging) handleColorWheelInteraction(e); });
+            document.addEventListener('mouseup', () => { isDragging = false; });
+            colorWheelContainer.addEventListener('touchstart', (e) => { isDragging = true; handleColorWheelInteraction(e); });
+            colorWheelContainer.addEventListener('touchmove', (e) => { if(isDragging) handleColorWheelInteraction(e); });
+            document.addEventListener('touchend', () => { isDragging = false; });
+            
             // --- Başlatma ---
             events = loadEventsFromLocal();
             drawClockFace();
             renderEventsList();
-            setupManualTime(); // Uygulama başlangıcında manuel saat kurulumunu kontrol et
+            setupManualTime();
         });
     </script>
 </body>
