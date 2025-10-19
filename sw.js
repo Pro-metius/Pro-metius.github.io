@@ -1,52 +1,31 @@
-const CACHE_NAME = 'sectograph-cache-v6'; // Önbelleği sıfırlamak için versiyon yükseltildi
-const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap'
+const CACHE_NAME = 'sectograph-v1';
+const ASSETS_TO_CACHE = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  // gerekirse CSS/JS/diğer assetleri ekleyin
 ];
 
-// Yükleme: Yeni dosyaları önbelleğe al
-self.addEventListener('install', event => {
-  self.skipWaiting(); // Eski service worker'ın beklemesini engelle
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Önbellek açıldı ve dosyalar ekleniyor.');
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE))
   );
 });
 
-// Aktivasyon: Eski önbellekleri temizle
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Eski önbellek siliniyor:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim()) // Kontrolü hemen al
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+    ))
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then(resp => resp || fetch(event.request))
   );
 });
-
-// Fetch: Önce önbellekten, bulamazsa ağdan yanıt ver
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Önbellekte varsa, oradan döndür
-                if (response) {
-                    return response;
-                }
-                // Önbellekte yoksa, ağdan al
-                return fetch(event.request);
-            })
-    );
-});
-
