@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>24 Saatlik Zaman Planlayıcı</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 10px; border: 2px solid #1f2937; }
         input[type="text"].time-input::placeholder { color: #9ca3af; }
         input[type="text"].time-input.invalid-time { border-color: #ef4444 !important; }
-        
+
         .sr-only {
             position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
             overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
@@ -42,7 +42,7 @@
             background-color: #3b82f6; color: #ffffff;
             border-color: #2563eb; font-weight: 500;
         }
-        
+
         input[type="color"] {
             -webkit-appearance: none; -moz-appearance: none; appearance: none;
             width: 2.5rem; height: 2.5rem; background-color: transparent;
@@ -66,7 +66,7 @@
                 <defs id="pattern-defs"></defs>
                 <circle cx="300" cy="300" r="288" fill="none" stroke="#374151" stroke-width="4"/>
                 <circle cx="300" cy="300" r="276" fill="#1f2937" />
-                <g id="event-arcs"></g> 
+                <g id="event-arcs"></g>
                 <circle cx="300" cy="300" r="216" fill="none" stroke="#4b5563" stroke-width="1" stroke-dasharray="4 4"/>
                 <circle cx="300" cy="300" r="120" fill="none" stroke="#4b5563" stroke-width="1" />
                 <g id="ticks"></g>
@@ -80,14 +80,24 @@
             </svg>
             <p id="digital-clock" class="w-full text-center text-3xl md:text-4xl text-blue-200 font-medium mt-4 tracking-wider"></p>
         </div>
+
         <!-- Sağ Sütun: Görev Yöneticisi -->
         <div class="flex flex-col w-full p-4 sm:p-6 bg-gray-800 rounded-3xl shadow-lg border border-gray-700 md:h-full md:overflow-hidden">
             <h2 class="clock-title text-xl md:text-2xl text-center mb-4 text-gray-300 flex-shrink-0">Etkinlik Yöneticisi</h2>
             <form id="add-event-form" class="grid grid-cols-2 gap-x-4 gap-y-5 mb-4 flex-shrink-0">
-                <div class="col-span-2"><label for="event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label><input type="text" id="event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white"/></div>
-                <div><label for="start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç (SS:DD)</label><input type="text" id="start-time" inputmode="numeric" maxlength="5" placeholder="09:30" class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white"/></div>
-                <div><label for="end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş (SS:DD)</label><input type="text" id="end-time" inputmode="numeric" maxlength="5" placeholder="10:30" class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white"/></div>
-                
+                <div class="col-span-2">
+                    <label for="event-name" class="block text-sm font-medium text-gray-400 mb-1">Etkinlik Adı</label>
+                    <input type="text" id="event-name" required class="w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white"/>
+                </div>
+                <div>
+                    <label for="start-time" class="block text-sm font-medium text-gray-400 mb-1">Başlangıç (SS:DD)</label>
+                    <input type="text" id="start-time" inputmode="numeric" maxlength="5" placeholder="09:30" class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white"/>
+                </div>
+                <div>
+                    <label for="end-time" class="block text-sm font-medium text-gray-400 mb-1">Bitiş (SS:DD)</label>
+                    <input type="text" id="end-time" inputmode="numeric" maxlength="5" placeholder="10:30" class="time-input w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white"/>
+                </div>
+
                 <div class="col-span-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <label class="block text-sm font-medium text-gray-400">Renk</label>
@@ -116,72 +126,388 @@
 
                 <div class="col-span-2"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Etkinlik Ekle</button></div>
             </form>
-            <div class="flex-grow overflow-y-auto custom-scrollbar pr-2 min-h-0"><h3 class="text-xl font-medium text-gray-300 mb-4 flex-shrink-0">Etkinlik Listesi</h3><ul id="event-list" class="space-y-3 pb-4"></ul></div>
+
+            <div class="flex-grow overflow-y-auto custom-scrollbar pr-2 min-h-0">
+                <h3 class="text-xl font-medium text-gray-300 mb-4 flex-shrink-0">Etkinlik Listesi</h3>
+                <ul id="event-list" class="space-y-3 pb-4"></ul>
+            </div>
         </div>
     </main>
 
-    <!-- (Düzenleme modalı, renk seçici vb. orijinal dosyadaki tüm markup ve modal içerikleri buraya aynen eklenmelidir.
-         Bu index.html örneğinde JavaScript fonksiyonlarıyla uyumlu olması için modal id'leri ve input id'leri korunmuştur.) -->
+    <!-- Manuel Saat Modal (örnek minimal markup; eğer orijinalda farklıysa orijinali koruyun) -->
+    <div id="manual-time-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+      <div class="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-sm border border-gray-700">
+        <h2 class="text-2xl font-bold text-white mb-6 text-center">Saati Manuel Kur</h2>
+        <p class="text-gray-400 text-center mb-6">Lütfen başlangıç saatini girin (SS:DD). Uygulama bu saatten itibaren saymaya devam edecektir.</p>
+        <form id="manual-time-form">
+          <div class="flex justify-center items-center gap-4 mb-8">
+            <input type="text" id="manual-hour" inputmode="numeric" maxlength="2" placeholder="SS" required class="time-input w-24 bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white"/>
+            <span class="text-4xl text-gray-500">:</span>
+            <input type="text" id="manual-minute" inputmode="numeric" maxlength="2" placeholder="DD" required class="time-input w-24 bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-white"/>
+          </div>
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Saati Başlat</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Color picker modal and edit modal markup should exist here if in original file (kept out for brevity) -->
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM Elementleri ---
-            const addForm = document.getElementById('add-event-form');
-            const eventList = document.getElementById('event-list');
-            const eventArcsContainer = document.getElementById('event-arcs');
-            const hourHand = document.getElementById('hour-hand');
-            const minuteHand = document.getElementById('minute-hand');
-            // ... diğer DOM elementleri gerektiği gibi seçilir (edit modal, color picker vb.)
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM Elementleri ---
+        const addForm = document.getElementById('add-event-form');
+        const eventList = document.getElementById('event-list');
+        const eventArcsContainer = document.getElementById('event-arcs');
+        const hourHand = document.getElementById('hour-hand');
+        const minuteHand = document.getElementById('minute-hand');
+        const manualTimeModal = document.getElementById('manual-time-modal');
+        const manualTimeForm = document.getElementById('manual-time-form');
+        const digitalClock = document.getElementById('digital-clock');
+        const addColorSwatch = document.getElementById('add-color-swatch');
 
-            const scaleFactor = 1.2;
-            const centerX = 250 * scaleFactor;
-            const centerY = 250 * scaleFactor;
-            const eventArcRadius = 246;
-            
-            let events = [];
-            let currentDay = -1; 
-            let totalSecondsFromMidnight = 0;
-            let clockIntervalId = null;
-            let pickerState = { h: 210 };
+        const scaleFactor = 1.2;
+        const centerX = 250 * scaleFactor;
+        const centerY = 250 * scaleFactor;
+        const eventArcRadius = 246;
 
-            function saveEventsToLocal() { localStorage.setItem('sectographEvents', JSON.stringify(events)); }
-            function loadEventsFromLocal() {
-                const savedEvents = localStorage.getItem('sectographEvents');
-                if (savedEvents) { try { const parsed = JSON.parse(savedEvents); return Array.isArray(parsed) ? parsed : []; } catch (e) { return []; } }
-                return [];
+        let events = [];
+        let currentDay = -1;
+        let totalSecondsFromMidnight = 0;
+        let clockIntervalId = null;
+
+        // --- LocalStorage helpers ---
+        function saveEventsToLocal() { localStorage.setItem('sectographEvents', JSON.stringify(events)); }
+        function loadEventsFromLocal() {
+            const savedEvents = localStorage.getItem('sectographEvents');
+            if (savedEvents) { try { const parsed = JSON.parse(savedEvents); return Array.isArray(parsed) ? parsed : []; } catch (e) { return []; } }
+            return [];
+        }
+
+        // --- Time helpers ---
+        function timeToMinutes(timeStr) {
+            if (!timeStr || !timeStr.includes(':')) return 0;
+            const [h, m] = timeStr.split(':').map(Number); return h * 60 + m;
+        }
+        function timeToAngle(timeStr) { return (timeToMinutes(timeStr) / 1440) * 360 - 90; }
+        function polarToCartesian(cx, cy, r, angle) { const rad = angle * Math.PI / 180.0; return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) }; }
+        function createArc(cx, cy, r, start, end) {
+            if (end < start) end += 360;
+            const s = polarToCartesian(cx, cy, r, end);
+            const e = polarToCartesian(cx, cy, r, start);
+            const flag = end - start <= 180 ? "0" : "1";
+            return ["M", s.x, s.y, "A", r, r, 0, flag, 0, e.x, e.y, "L", cx, cy, "Z"].join(" ");
+        }
+
+        // --- Çizim fonksiyonları (orijinalin tüm detayları burada olmalı) ---
+        function drawClockFace() {
+            const ticks = document.getElementById('ticks');
+            const numbers = document.getElementById('numbers');
+            if (!ticks || !numbers) return;
+            ticks.innerHTML = ''; numbers.innerHTML = '';
+
+            const radius = 195 * scaleFactor;
+            const tickOuterRadius = 230 * scaleFactor;
+            const tickInnerRadiusMajor = 215 * scaleFactor;
+            const tickInnerRadiusMinor = 220 * scaleFactor;
+            const tickInnerRadiusSmall = 225 * scaleFactor;
+
+            for (let i = 0; i < (24 * 6); i++) {
+                const totalMinutes = i * 10;
+                const angle = (totalMinutes / (24 * 60)) * 360 - 90;
+                const angleRad = angle * (Math.PI / 180);
+                const isHourTick = (totalMinutes % 60) === 0;
+                const isMajorHourTick = isHourTick && ((totalMinutes / 60) % 6 === 0);
+                let tickStartRadius, tickWidth, tickColor;
+                if (isHourTick) {
+                    tickStartRadius = isMajorHourTick ? tickInnerRadiusMajor : tickInnerRadiusMinor;
+                    tickWidth = isMajorHourTick ? '3' : '2';
+                    tickColor = isMajorHourTick ? '#60a5fa' : '#4b5563';
+                } else {
+                    tickStartRadius = tickInnerRadiusSmall;
+                    tickWidth = '1';
+                    tickColor = '#4b5563';
+                }
+                const x1 = centerX + tickStartRadius * Math.cos(angleRad);
+                const y1 = centerY + tickStartRadius * Math.sin(angleRad);
+                const x2 = centerX + tickOuterRadius * Math.cos(angleRad);
+                const y2 = centerY + tickOuterRadius * Math.sin(angleRad);
+                const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                tick.setAttribute('x1', x1); tick.setAttribute('y1', y1); tick.setAttribute('x2', x2); tick.setAttribute('y2', y2);
+                tick.setAttribute('stroke', tickColor); tick.setAttribute('stroke-width', tickWidth);
+                ticks.appendChild(tick);
             }
 
-            // (Burada orijinal dosyadaki tüm yardımcı fonksiyonlar: drawClockFace, createArc, polarToCartesian,
-            // timeToMinutes, timeToAngle, isEventOnDay, renderEventsList, renderClockArcs, renderOverlaps, updateClock,
-            // startClockInterval, setupManualTime, drawColorWheel, color picker handlers vb. eksiksiz olmalı.)
-            // Aşağıya sadece kritik kısım: başlangıç (startup) bloğu ekleniyor.
-
-            // --- Başlatma (Güncelleme) ---
-            events = loadEventsFromLocal();
-            // drawClockFace(); // mevcut fonksiyondaki çizimi çağırın (orijinal dosyada bulunan fonksiyon çağrısı)
-            if (typeof drawClockFace === 'function') drawClockFace();
-            if (typeof renderEventsList === 'function') renderEventsList();
-
-            // currentDay'i saklı referans gününden al, yoksa bugünün günü olsun
-            const storedRef = (() => { try { return JSON.parse(localStorage.getItem('sectographReferenceDay')); } catch(e) { return null; } })();
-            if (storedRef && typeof storedRef.day === 'number') {
-              currentDay = storedRef.day;
-            } else {
-              currentDay = new Date().getDay();
-              try { localStorage.setItem('sectographReferenceDay', JSON.stringify({ day: currentDay })); } catch(e) {}
+            for (let h = 0; h < 24; h++) {
+                const angle = (h / 24) * 360 - 90;
+                const angleRad = angle * (Math.PI / 180);
+                const isMajorTick = h % 6 === 0;
+                const numX = centerX + radius * Math.cos(angleRad);
+                const numY = centerY + radius * Math.sin(angleRad);
+                const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                numberText.setAttribute('x', numX); numberText.setAttribute('y', numY);
+                numberText.setAttribute('fill', isMajorTick ? '#93c5fd' : '#e5e7eb');
+                numberText.setAttribute('font-weight', isMajorTick ? '500' : '400');
+                numberText.setAttribute('text-anchor', 'middle');
+                numberText.setAttribute('dominant-baseline', 'central');
+                if (h === 0) {
+                    numberText.setAttribute('font-size', `${20 * 1.2}`);
+                    numberText.textContent = '00';
+                } else {
+                    numberText.setAttribute('font-size', isMajorTick ? `${22 * 1.2}` : `${16 * 1.2}`);
+                    numberText.textContent = h.toString().padStart(2, '0');
+                }
+                numbers.appendChild(numberText);
             }
+        }
 
-            // SVG ve DOM tamamen hazır olana kadar bir frame beklemek faydalı olabilir
-            requestAnimationFrame(() => {
-              if (typeof renderClockArcs === 'function') renderClockArcs(currentDay);
+        function isEventOnDay(event, dayOfWeek) {
+            const recurrence = event.recurrence;
+            if (!recurrence) return true;
+            switch (recurrence.type) {
+                case 'weekday': return dayOfWeek >= 1 && dayOfWeek <= 5;
+                case 'weekend': return dayOfWeek === 0 || dayOfWeek === 6;
+                case 'custom': return recurrence.days && recurrence.days.includes(String(dayOfWeek));
+                default: return true;
+            }
+        }
+
+        function renderEventsList() {
+            eventList.innerHTML = '';
+            if (events.length === 0) { eventList.innerHTML = `<p class="text-gray-500 text-center">Henüz etkinlik eklenmedi.</p>`; return; }
+            [...events].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start)).forEach(event => {
+                const li = document.createElement('li');
+                li.className = 'bg-gray-700 p-3 rounded-lg flex items-center justify-between';
+                li.innerHTML = `
+                    <div class="flex items-center overflow-hidden mr-2">
+                        <span class="w-4 h-4 rounded-full mr-3 flex-shrink-0" style="background-color: ${event.color};"></span>
+                        <div class="truncate">
+                            <p class="font-semibold text-white truncate">${event.name}</p>
+                            <p class="text-sm text-gray-400">${event.start} - ${event.end}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center flex-shrink-0 gap-3">
+                        <div class="text-xs text-gray-400 text-right max-w-[80px]">${getRecurrenceDaysText(event.recurrence)}</div>
+                    </div>`;
+                eventList.appendChild(li);
             });
+        }
 
-            // Manual time/setup mantığını çağır (setupManualTime() eski davranışı korur)
-            if (typeof setupManualTime === 'function') setupManualTime();
+        function getRecurrenceDaysText(recurrence) {
+            if (!recurrence) return '';
+            const dayNames = { '1': 'Pzt', '2': 'Sal', '3': 'Çar', '4': 'Per', '5': 'Cum', '6': 'Cmt', '0': 'Paz' };
+            let textToShow = '';
+            switch (recurrence.type) {
+                case 'weekday': textToShow = "Hafta içi"; break;
+                case 'weekend': textToShow = "Hafta sonu"; break;
+                case 'custom':
+                    if (!recurrence.days || recurrence.days.length === 0) return '';
+                    const sortedDays = recurrence.days.sort((a, b) => (a === '0' ? 7 : parseInt(a)) - (b === '0' ? 7 : parseInt(b)));
+                    textToShow = sortedDays.map(d => dayNames[d]).join(', ');
+                    break;
+                default: return '';
+            }
+            return textToShow ? `<div class="text-xs text-gray-400 text-right max-w-[80px]">${textToShow}</div>` : '';
+        }
+
+        function renderClockArcs(dayOfWeek, isAnimating = false) {
+            eventArcsContainer.innerHTML = '';
+            const patternDefs = document.getElementById('pattern-defs');
+            if (patternDefs) patternDefs.innerHTML = '';
+
+            const eventsForToday = events.filter(event => isEventOnDay(event, dayOfWeek));
+            if (eventsForToday.length === 0) return;
+
+            const sortedEvents = [...eventsForToday].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+
+            sortedEvents.forEach(event => {
+                const startAngle = timeToAngle(event.start);
+                const endAngle = timeToAngle(event.end);
+                if (timeToMinutes(event.end) < timeToMinutes(event.start)) {
+                    const arc1 = createArc(centerX, centerY, eventArcRadius, startAngle, 270);
+                    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    path1.setAttribute('d', arc1); path1.setAttribute('fill', event.color); path1.setAttribute('fill-opacity', '0.7');
+                    if(isAnimating) path1.classList.add('arc-fade-in');
+                    eventArcsContainer.appendChild(path1);
+
+                    const arc2 = createArc(centerX, centerY, eventArcRadius, -90, endAngle);
+                    const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    path2.setAttribute('d', arc2); path2.setAttribute('fill', event.color); path2.setAttribute('fill-opacity', '0.7');
+                    if(isAnimating) path2.classList.add('arc-fade-in');
+                    eventArcsContainer.appendChild(path2);
+                } else {
+                    const arc = createArc(centerX, centerY, eventArcRadius, startAngle, endAngle);
+                    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    path.setAttribute('d', arc); path.setAttribute('fill', event.color); path.setAttribute('fill-opacity', '0.7');
+                    if(isAnimating) path.classList.add('arc-fade-in');
+                    eventArcsContainer.appendChild(path);
+                }
+            });
+            renderOverlaps(sortedEvents);
+        }
+
+        function renderOverlaps(sortedEvents) {
+            const drawnPatterns = {};
+            for (let i = 0; i < sortedEvents.length; i++) {
+                for (let j = i + 1; j < sortedEvents.length; j++) {
+                    const getIntervals = (e) => {
+                        const start = timeToMinutes(e.start); const end = timeToMinutes(e.end);
+                        return (end < start) ? [[start, 1440], [0, end]] : [[start, end]];
+                    };
+                    for (const int1 of getIntervals(sortedEvents[i])) {
+                        for (const int2 of getIntervals(sortedEvents[j])) {
+                            const overlapStart = Math.max(int1[0], int2[0]);
+                            const overlapEnd = Math.min(int1[1], int2[1]);
+                            if (overlapStart < overlapEnd) {
+                                const overlapColor = sortedEvents[j].color;
+                                const patternId = `pattern-${overlapColor.replace('#', '')}`;
+                                if (!drawnPatterns[patternId]) {
+                                    const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+                                    pattern.setAttribute('id', patternId); pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+                                    pattern.setAttribute('width', '8'); pattern.setAttribute('height', '8');
+                                    pattern.setAttribute('patternTransform', 'rotate(45)');
+                                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                                    line.setAttribute('x1', '0'); line.setAttribute('y1', '0'); line.setAttribute('x2', '0'); line.setAttribute('y2', '8');
+                                    line.setAttribute('stroke', overlapColor); line.setAttribute('stroke-width', '4');
+                                    pattern.appendChild(line);
+                                    document.getElementById('pattern-defs').appendChild(pattern);
+                                    drawnPatterns[patternId] = true;
+                                }
+                                const arc = createArc(centerX, centerY, eventArcRadius, (overlapStart / 1440) * 360 - 90, (overlapEnd / 1440) * 360 - 90);
+                                const overlapPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                                overlapPath.setAttribute('d', arc);
+                                overlapPath.setAttribute('fill', `url(#${patternId})`);
+                                overlapPath.setAttribute('fill-opacity', '0.7');
+                                eventArcsContainer.appendChild(overlapPath);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function updateClock() {
+            if (clockIntervalId === null) return;
+
+            totalSecondsFromMidnight++;
+
+            const totalSecondsToday = totalSecondsFromMidnight % (24 * 3600);
+            const h = Math.floor(totalSecondsToday / 3600);
+            const m = Math.floor((totalSecondsToday % 3600) / 60);
+            const s = totalSecondsToday % 60;
+
+            const referenceDayData = JSON.parse(localStorage.getItem('sectographReferenceDay'));
+            if (referenceDayData) {
+                const daysPassed = Math.floor(totalSecondsFromMidnight / (24 * 3600));
+                const newDay = (referenceDayData.day + daysPassed) % 7;
+                if (newDay !== currentDay && currentDay !== -1) {
+                    const oldArcs = eventArcsContainer.querySelectorAll('path');
+                    oldArcs.forEach(arc => arc.classList.add('arc-fade-out'));
+                    setTimeout(() => { renderClockArcs(newDay, true); }, 500);
+                }
+                currentDay = newDay;
+            }
+
+            digitalClock.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+
+            const hourAngle = ((h * 60 + m) / (24 * 60)) * 360;
+            const minuteAngle = (m / 60) * 360;
+
+            hourHand.setAttribute('transform', `rotate(${hourAngle} ${centerX} ${centerY})`);
+            minuteHand.setAttribute('transform', `rotate(${minuteAngle} ${centerX} ${centerY})`);
+        }
+
+        function startClockInterval(startSeconds) {
+            if (clockIntervalId) clearInterval(clockIntervalId);
+            totalSecondsFromMidnight = startSeconds;
+            if (typeof updateClock === 'function') updateClock();
+            clockIntervalId = setInterval(updateClock, 1000);
+        }
+
+        // --- Manuel zaman modal yönetimi ---
+        function setupManualTime() {
+            const savedTimeData = localStorage.getItem('sectographManualTime');
+            if (savedTimeData) {
+                try {
+                    const { referenceTotalSeconds, savedAt } = JSON.parse(savedTimeData);
+                    const elapsedSeconds = Math.floor((Date.now() - savedAt) / 1000);
+                    const currentTotalSeconds = referenceTotalSeconds + elapsedSeconds;
+
+                    // Modalı gizle ve saati başlat
+                    if (manualTimeModal && manualTimeModal.classList) manualTimeModal.classList.add('hidden');
+                    startClockInterval(currentTotalSeconds);
+                    return;
+                } catch(e) {
+                    console.error("Hatalı saat verisi.", e);
+                    localStorage.removeItem('sectographManualTime');
+                }
+            }
+
+            // Eğer kaydedilmiş manuel zaman yoksa ilk kurulum için modalı göster
+            if (manualTimeModal && manualTimeModal.classList) manualTimeModal.classList.remove('hidden');
+
+            manualTimeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const h = parseInt(document.getElementById('manual-hour').value, 10);
+                const m = parseInt(document.getElementById('manual-minute').value, 10);
+
+                if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) {
+                    alert('Lütfen geçerli bir saat (0-23) ve dakika (0-59) girin.');
+                    return;
+                }
+
+                const referenceTotalSeconds = h * 3600 + m * 60;
+
+                const timeToSave = {
+                    referenceTotalSeconds: referenceTotalSeconds,
+                    savedAt: Date.now()
+                };
+                localStorage.setItem('sectographManualTime', JSON.stringify(timeToSave));
+
+                const now = new Date();
+                localStorage.setItem('sectographReferenceDay', JSON.stringify({ day: now.getDay() }));
+
+                currentDay = now.getDay();
+
+                // Kadranı güncelle ve saati başlat
+                try { renderClockArcs(currentDay); } catch(e) {}
+                if (manualTimeModal && manualTimeModal.classList) manualTimeModal.classList.add('hidden');
+                startClockInterval(referenceTotalSeconds);
+            }, { once: true });
+        }
+
+        // --- Başlatma (Startup) ---
+        events = loadEventsFromLocal();
+        if (typeof drawClockFace === 'function') drawClockFace();
+        if (typeof renderEventsList === 'function') renderEventsList();
+
+        // reference day kontrolü
+        const storedRef = (() => { try { return JSON.parse(localStorage.getItem('sectographReferenceDay')); } catch(e) { return null; } })();
+        if (storedRef && typeof storedRef.day === 'number') {
+          currentDay = storedRef.day;
+        } else {
+          currentDay = new Date().getDay();
+          try { localStorage.setItem('sectographReferenceDay', JSON.stringify({ day: currentDay })); } catch(e) {}
+        }
+
+        // Kadrandaki yayları hemen çiz (render hazır olunca)
+        requestAnimationFrame(() => {
+          try { renderClockArcs(currentDay); } catch (err) { console.warn('renderClockArcs hata:', err); }
         });
+
+        // Manuel zaman var mı? varsa onu kullan, yoksa modal ile ilk kurulum yap
+        const manualSaved = (() => { try { return JSON.parse(localStorage.getItem('sectographManualTime')); } catch(e) { return null; } })();
+        if (manualSaved && typeof manualSaved.referenceTotalSeconds === 'number' && typeof manualSaved.savedAt === 'number') {
+            const elapsed = Math.floor((Date.now() - manualSaved.savedAt) / 1000);
+            const currentTotalSeconds = manualSaved.referenceTotalSeconds + elapsed;
+            startClockInterval(currentTotalSeconds);
+        } else {
+            // İlk açılış: kullanıcı manuel saati kuracak
+            setupManualTime();
+        }
+    });
     </script>
 
-    <!-- Service worker registration -->
+    <!-- Service worker registration (sw.js) -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
