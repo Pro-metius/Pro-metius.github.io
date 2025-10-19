@@ -225,7 +225,6 @@
             let activeColorSwatch = null;
             let pickerState = { h: 210 };
 
-            // --- Veri Saklama Fonksiyonları (LocalStorage) ---
             function saveEventsToLocal() { localStorage.setItem('sectographEvents', JSON.stringify(events)); }
             function loadEventsFromLocal() {
                 const savedEvents = localStorage.getItem('sectographEvents');
@@ -233,7 +232,6 @@
                 return [];
             }
 
-            // --- Saat Arayüzü Çizim Fonksiyonları ---
             function drawClockFace() {
                 const ticks = document.getElementById('ticks');
                 const numbers = document.getElementById('numbers');
