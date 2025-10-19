@@ -1,7 +1,7 @@
 {
   "name": "24 Saatlik Zaman Planlayıcı",
-  "short_name": "Sectograph",
-  "description": "Sectograph — 24 saatlik kadran",
+  "short_name": "Planlayıcı",
+  "description": "Günlük planlayıcı — 24 saatlik kadran",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
